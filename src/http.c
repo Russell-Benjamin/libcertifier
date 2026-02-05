@@ -34,10 +34,10 @@ static void set_curl_options(CURL * curl, CertifierPropMap * prop_map)
     char * mtls_p12           = property_get(prop_map, CERTIFIER_OPT_MTLS_P12_PATH);
     char * mtls_password      = property_get(prop_map, CERTIFIER_OPT_MTLS_P12_PASSWORD);
 
-    log_debug("[set_curl_options] - Host Validation=%i", host_validation);
-    log_debug("[set_curl_options] - Peer Validation=%i", peer_validation);
-    log_debug("[set_curl_options] - Debug HTTP Enabled=%i", is_debug_http_enabled);
-    log_debug("[set_curl_options] - Trace HTTP Enabled=%i", is_trace_http_enabled);
+    log_debug("[set_curl_options] - Host Validation=%i\n", host_validation);
+    log_debug("[set_curl_options] - Peer Validation=%i\n", peer_validation);
+    log_debug("[set_curl_options] - Debug HTTP Enabled=%i\n", is_debug_http_enabled);
+    log_debug("[set_curl_options] - Trace HTTP Enabled=%i\n", is_trace_http_enabled);
 
     // First set the URL that is about to receive our POST.
     http_set_curlopt(curl, CURLOPT_ACCEPT_ENCODING, "");

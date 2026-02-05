@@ -680,20 +680,20 @@ SECTIGO_CLIENT_ERROR_CODE sectigo_process(SECTIGO_MODE mode, sectigo_parameter_t
         certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_GROUP_EMAIL, optarg);
         break;
     case 'O':
-        sectigo_parameter->sectigo_get_cert_param.sectigo_owner_fname = optarg;
-        certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_OWNER_FNAME, optarg);
+        sectigo_parameter->sectigo_get_cert_param.sectigo_owner_first_name = optarg;
+        certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_OWNER_FIRST_NAME, optarg);
         break;
     case 'J':
-        sectigo_parameter->sectigo_get_cert_param.sectigo_owner_lname = optarg;
-        certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_OWNER_LNAME, optarg);
+        sectigo_parameter->sectigo_get_cert_param.sectigo_owner_last_name = optarg;
+        certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_OWNER_LAST_NAME, optarg);
         break;
     case 'Z':
         sectigo_parameter->sectigo_get_cert_param.sectigo_owner_email = optarg;
         certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_OWNER_EMAIL, optarg);
         break;
     case 'U':
-        sectigo_parameter->sectigo_get_cert_param.sectigo_owner_phonenum = optarg;
-        certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_OWNER_PHONENUM, optarg);
+        sectigo_parameter->sectigo_get_cert_param.sectigo_owner_phone_number = optarg;
+        certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_OWNER_PHONE_NUMBER, optarg);
         break;
     case 'T':
         sectigo_parameter->sectigo_get_cert_param.sectigo_cert_type = optarg;
@@ -705,7 +705,7 @@ SECTIGO_CLIENT_ERROR_CODE sectigo_process(SECTIGO_MODE mode, sectigo_parameter_t
         break;
     case 'u':
         sectigo_parameter->sectigo_get_cert_param.sectigo_url = optarg;
-        certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_CERTIFIER_URL, optarg);
+        certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_URL, optarg);
         break;
     case 'W':
         sectigo_parameter->sectigo_get_cert_param.sectigo_tracking_id = optarg;

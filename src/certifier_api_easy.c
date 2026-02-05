@@ -1210,7 +1210,7 @@ static int process_command_line(CERTIFIER * easy)
             break;
         case 'u': // sectigo url
         if (optarg) {
-        return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_CERTIFIER_URL, optarg);
+        return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_URL, optarg);
         }
         case 'G': // group-name
             if (optarg) {
@@ -1224,12 +1224,12 @@ static int process_command_line(CERTIFIER * easy)
             break;
         case 'O': // owner-fname
             if (optarg) {
-                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_OWNER_FNAME, optarg);
+                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_OWNER_FIRST_NAME, optarg);
             }
             break;
         case 'J': // owner-lname
             if (optarg) {
-                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_OWNER_LNAME, optarg);
+                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_OWNER_LAST_NAME, optarg);
             }
             break;
         case 'M': // owner-email
@@ -1237,9 +1237,9 @@ static int process_command_line(CERTIFIER * easy)
                 return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_OWNER_EMAIL, optarg);
             }
             break;
-        case 'Z': // owner-phonenum
+        case 'Z': // owner-phone-number
             if (optarg) {
-                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_OWNER_PHONENUM, optarg);
+                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_OWNER_PHONE_NUMBER, optarg);
             }
             break;
         case 'U': // cert-type

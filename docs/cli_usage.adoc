@@ -759,9 +759,9 @@ Note: 64-bit hex integer expected as input.
 | Mark request for a lite certificate. +
 Note: value type = `bool`
 
-| libcertifier.sectigo.certifier.url
+| libcertifier.sectigo.url
 | "https://certs.xpki.io/api/createCertificate"
-| Sectigo API endpoint URL
+| Sectigo URL
 
 | libcertifier.sectigo.auth.token
 | ""
@@ -783,11 +783,11 @@ Note: value type = `bool`
 | "user123"
 | User or device ID
 
-| libcertifier.sectigo.owner.fname
+| libcertifier.sectigo.owner.first.name
 | "First"
 | Owner's first name
 
-| libcertifier.sectigo.owner.lname
+| libcertifier.sectigo.owner.last.name
 | "Last"
 | Owner's last name
 
@@ -828,7 +828,7 @@ Note: value type = `array of strings`  Pass empty array if you don't have.
 | Certificate type. +
 Note: Always pass comodo for internet-facing apps
 
-| libcertifier.sectigo.owner.phonenum
+| libcertifier.sectigo.owner.phone.number
 | "1234567890"
 | Owner's phone number
 

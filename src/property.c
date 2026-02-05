@@ -207,8 +207,8 @@ struct _PropMap
     char * sectigo_group_name;
     char * sectigo_group_email;
     char * sectigo_id;
-    char * sectigo_owner_fname;
-    char * sectigo_owner_lname;
+    char * sectigo_owner_first_name;
+    char * sectigo_owner_last_name;
     char * sectigo_employee_type;
     char * sectigo_server_platform;
     bool sectigo_sensitive;
@@ -216,7 +216,7 @@ struct _PropMap
     char * sectigo_business_justification;
     char * sectigo_subject_alt_names;
     char * sectigo_ip_addresses;
-    char * sectigo_owner_phonenum;
+    char * sectigo_owner_phone_number;
     char * sectigo_owner_email;
     char * sectigo_cert_type;
     char * sectigo_tracking_id;
@@ -385,11 +385,11 @@ int sectigo_property_set(CertifierPropMap * prop_map, int name, const void * val
         case CERTIFIER_OPT_SECTIGO_ID:
             prop_map->sectigo_id = XSTRDUP((const char *)value);
             break;
-        case CERTIFIER_OPT_SECTIGO_OWNER_FNAME:
-            prop_map->sectigo_owner_fname = XSTRDUP((const char *)value);
+        case CERTIFIER_OPT_SECTIGO_OWNER_FIRST_NAME:
+            prop_map->sectigo_owner_first_name = XSTRDUP((const char *)value);
             break;
-        case CERTIFIER_OPT_SECTIGO_OWNER_LNAME:
-            prop_map->sectigo_owner_lname = XSTRDUP((const char *)value);
+        case CERTIFIER_OPT_SECTIGO_OWNER_LAST_NAME:
+            prop_map->sectigo_owner_last_name = XSTRDUP((const char *)value);
             break;
         case CERTIFIER_OPT_SECTIGO_EMPLOYEE_TYPE:
             prop_map->sectigo_employee_type = XSTRDUP((const char *)value);
@@ -415,8 +415,8 @@ int sectigo_property_set(CertifierPropMap * prop_map, int name, const void * val
         case CERTIFIER_OPT_SECTIGO_CERT_TYPE:
             prop_map->sectigo_cert_type = XSTRDUP((const char *)value);
             break;
-        case CERTIFIER_OPT_SECTIGO_OWNER_PHONENUM:
-            prop_map->sectigo_owner_phonenum = XSTRDUP((const char *)value);
+        case CERTIFIER_OPT_SECTIGO_OWNER_PHONE_NUMBER:
+            prop_map->sectigo_owner_phone_number = XSTRDUP((const char *)value);
             break;
         case CERTIFIER_OPT_SECTIGO_OWNER_EMAIL:
             prop_map->sectigo_owner_email = XSTRDUP((const char *)value);
@@ -427,7 +427,7 @@ int sectigo_property_set(CertifierPropMap * prop_map, int name, const void * val
         case CERTIFIER_OPT_SECTIGO_SOURCE:
             prop_map->sectigo_source = XSTRDUP((const char *)value);
             break;
-        case CERTIFIER_OPT_SECTIGO_CERTIFIER_URL:
+        case CERTIFIER_OPT_SECTIGO_URL:
             prop_map->sectigo_url = XSTRDUP((const char *)value);
             break;
         default:
@@ -912,11 +912,11 @@ void * property_get(CertifierPropMap * prop_map, CERTIFIER_OPT name)
     case CERTIFIER_OPT_SECTIGO_ID:
         retval = (void *) prop_map->sectigo_id;
         break;
-    case CERTIFIER_OPT_SECTIGO_OWNER_FNAME:
-        retval = (void *) prop_map->sectigo_owner_fname;
+    case CERTIFIER_OPT_SECTIGO_OWNER_FIRST_NAME:
+        retval = (void *) prop_map->sectigo_owner_first_name;
         break;
-    case CERTIFIER_OPT_SECTIGO_OWNER_LNAME:
-        retval = (void *) prop_map->sectigo_owner_lname;
+    case CERTIFIER_OPT_SECTIGO_OWNER_LAST_NAME:
+        retval = (void *) prop_map->sectigo_owner_last_name;
         break;
     case CERTIFIER_OPT_SECTIGO_EMPLOYEE_TYPE:
         retval = (void *) prop_map->sectigo_employee_type;
@@ -939,8 +939,8 @@ void * property_get(CertifierPropMap * prop_map, CERTIFIER_OPT name)
     case CERTIFIER_OPT_SECTIGO_IP_ADDRESSES:
         retval = (void *) prop_map->sectigo_ip_addresses;
         break;
-    case CERTIFIER_OPT_SECTIGO_OWNER_PHONENUM:
-        retval = (void *) prop_map->sectigo_owner_phonenum;
+    case CERTIFIER_OPT_SECTIGO_OWNER_PHONE_NUMBER:
+        retval = (void *) prop_map->sectigo_owner_phone_number;
         break;
     case CERTIFIER_OPT_SECTIGO_OWNER_EMAIL:
         retval = (void *) prop_map->sectigo_owner_email;
@@ -954,7 +954,7 @@ void * property_get(CertifierPropMap * prop_map, CERTIFIER_OPT name)
     case CERTIFIER_OPT_SECTIGO_SOURCE:
         retval = (void *) prop_map->sectigo_source;
         break;
-    case CERTIFIER_OPT_SECTIGO_CERTIFIER_URL:
+    case CERTIFIER_OPT_SECTIGO_URL:
         retval = (void *) prop_map->sectigo_url;
         break;
 
@@ -1216,10 +1216,10 @@ if (strcmp(key, "libcertifier.sectigo.ip.addresses") == 0) {
                 sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_GROUP_EMAIL, value_str);
             else if (strcmp(key, "libcertifier.sectigo.id") == 0)
                 sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_ID, value_str);
-            else if (strcmp(key, "libcertifier.sectigo.owner.fname") == 0)
-                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_OWNER_FNAME, value_str);
-            else if (strcmp(key, "libcertifier.sectigo.owner.lname") == 0)
-                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_OWNER_LNAME, value_str);
+            else if (strcmp(key, "libcertifier.sectigo.owner.first.name") == 0)
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_OWNER_FIRST_NAME, value_str);
+            else if (strcmp(key, "libcertifier.sectigo.owner.last.name") == 0)
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_OWNER_LAST_NAME, value_str);
             else if (strcmp(key, "libcertifier.sectigo.employee.type") == 0)
                 sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_EMPLOYEE_TYPE, value_str);
             else if (strcmp(key, "libcertifier.sectigo.server.platform") == 0)
@@ -1228,14 +1228,14 @@ if (strcmp(key, "libcertifier.sectigo.ip.addresses") == 0) {
                 sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_PROJECT_NAME, value_str);
             else if (strcmp(key, "libcertifier.sectigo.business.justification") == 0)
                 sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_BUSINESS_JUSTIFICATION, value_str);
-            else if (strcmp(key, "libcertifier.sectigo.owner.phonenum") == 0)
-                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_OWNER_PHONENUM, value_str);
+            else if (strcmp(key, "libcertifier.sectigo.owner.phone.number") == 0)
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_OWNER_PHONE_NUMBER, value_str);
             else if (strcmp(key, "libcertifier.sectigo.owner.email") == 0)
                 sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_OWNER_EMAIL, value_str);
             else if (strcmp(key, "libcertifier.sectigo.cert.type") == 0)
                 sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_CERT_TYPE, value_str);
-            else if (strcmp(key, "libcertifier.sectigo.certifier.url") == 0)
-                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_CERTIFIER_URL, value_str);
+            else if (strcmp(key, "libcertifier.sectigo.url") == 0)
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_URL, value_str);
             else if (strcmp(key, "libcertifier.sectigo.tracking.id") == 0)
                 sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_TRACKING_ID, value_str);
             else if (strcmp(key, "libcertifier.sectigo.source") == 0)
@@ -1646,15 +1646,15 @@ static void free_prop_map_values(CertifierPropMap * prop_map)
     FV(prop_map->sectigo_group_name);
     FV(prop_map->sectigo_group_email);
     FV(prop_map->sectigo_id);
-    FV(prop_map->sectigo_owner_fname);
-    FV(prop_map->sectigo_owner_lname);
+    FV(prop_map->sectigo_owner_first_name);
+    FV(prop_map->sectigo_owner_last_name);
     FV(prop_map->sectigo_employee_type);
     FV(prop_map->sectigo_server_platform);
     FV(prop_map->sectigo_project_name);
     FV(prop_map->sectigo_business_justification);
     FV(prop_map->sectigo_subject_alt_names);
     FV(prop_map->sectigo_ip_addresses);
-    FV(prop_map->sectigo_owner_phonenum);
+    FV(prop_map->sectigo_owner_phone_number);
     FV(prop_map->sectigo_owner_email);
     FV(prop_map->sectigo_cert_type);
     FV(prop_map->sectigo_tracking_id);

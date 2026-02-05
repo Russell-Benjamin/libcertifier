@@ -248,8 +248,8 @@ static void test_get_sectigo_cert()
     params.sectigo_group_name           = "GroupName";
     params.sectigo_group_email          = "example@comcast.com";
     params.sectigo_id                   = "exid";
-    params.sectigo_owner_fname          = "First";
-    params.sectigo_owner_lname          = "Last";
+    params.sectigo_owner_first_name     = "First";
+    params.sectigo_owner_last_name      = "Last";
     params.sectigo_employee_type        = "associate";
     params.sectigo_server_platform      = "other";
     params.sectigo_sensitive            = "false";
@@ -258,7 +258,7 @@ static void test_get_sectigo_cert()
     params.sectigo_subject_alt_names    = "*";
     params.sectigo_ip_addresses         = "*";
     params.sectigo_cert_type            = "comodo";
-    params.sectigo_owner_phonenum       = "2670000000";
+    params.sectigo_owner_phone_number   = "2670000000";
     params.sectigo_owner_email          = "first_last@comcast.com";
     params.sectigo_url                  = "https://certs-dev.xpki.io/api/createCertificate";
     params.sectigo_source               = "libcertifier";

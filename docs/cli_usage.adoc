@@ -637,12 +637,6 @@ Disabled by default - Only error messages are shown.
 -l <file>
 | Path to config file
 
-| tracking-id
-| W
-| --tracking-id <value> +
--W <value>
-| Tracking ID
-
 |===
 
 *Configuration File*

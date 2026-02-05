@@ -138,18 +138,10 @@ const char * node_address, const char * certifier_id, char ** out_cert)
     JSON_Value * parsed_json_root_value          = NULL;
     char * serialized_string                     = NULL;
     http_response * resp                         = NULL;
-    const char * tracking_id                     = property_get(props, CERTIFIER_OPT_SECTIGO_TRACKING_ID);
+    const char * tracking_id                     = property_get(props, CERTIFIER_OPT_TRACKING_ID);
     const char * bearer_token                    = property_get(props, CERTIFIER_OPT_SECTIGO_AUTH_TOKEN);
     const char * source                          = property_get(props, CERTIFIER_OPT_SECTIGO_SOURCE);
     const char * certifier_url                   = property_get(props, CERTIFIER_OPT_SECTIGO_URL);
-    
-
-    if (!tracking_id) {
-    log_error("Missing CERTIFIER_OPT_SECTIGO_TRACKING_ID");
-    rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
-    rc.application_error_msg  = util_format_error_here("Tracking ID is missing");
-    goto cleanup;
-}
 
 if (!bearer_token) {
     log_error("Missing CERTIFIER_OPT_SECTIGO_AUTH_TOKEN");

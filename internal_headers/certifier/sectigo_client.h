@@ -56,7 +56,6 @@ const char * sectigo_owner_phone_number;
 const char * sectigo_owner_email;
 const char * sectigo_cert_type;
 const char * sectigo_url;
-const char * sectigo_tracking_id;
 const char * sectigo_source;
 
 

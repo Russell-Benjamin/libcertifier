@@ -219,7 +219,6 @@ struct _PropMap
     char * sectigo_owner_phone_number;
     char * sectigo_owner_email;
     char * sectigo_cert_type;
-    char * sectigo_tracking_id;
     char * sectigo_source;
     char * sectigo_url;
 };
@@ -420,9 +419,6 @@ int sectigo_property_set(CertifierPropMap * prop_map, int name, const void * val
             break;
         case CERTIFIER_OPT_SECTIGO_OWNER_EMAIL:
             prop_map->sectigo_owner_email = XSTRDUP((const char *)value);
-            break;
-        case CERTIFIER_OPT_SECTIGO_TRACKING_ID:
-            prop_map->sectigo_tracking_id = XSTRDUP((const char *)value);
             break;
         case CERTIFIER_OPT_SECTIGO_SOURCE:
             prop_map->sectigo_source = XSTRDUP((const char *)value);
@@ -948,9 +944,6 @@ void * property_get(CertifierPropMap * prop_map, CERTIFIER_OPT name)
     case CERTIFIER_OPT_SECTIGO_CERT_TYPE:
         retval = (void *) prop_map->sectigo_cert_type;
         break;
-    case CERTIFIER_OPT_SECTIGO_TRACKING_ID:
-        retval = (void *) prop_map->sectigo_tracking_id;
-        break;
     case CERTIFIER_OPT_SECTIGO_SOURCE:
         retval = (void *) prop_map->sectigo_source;
         break;
@@ -1236,8 +1229,6 @@ if (strcmp(key, "libcertifier.sectigo.ip.addresses") == 0) {
                 sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_CERT_TYPE, value_str);
             else if (strcmp(key, "libcertifier.sectigo.url") == 0)
                 sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_URL, value_str);
-            else if (strcmp(key, "libcertifier.sectigo.tracking.id") == 0)
-                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_TRACKING_ID, value_str);
             else if (strcmp(key, "libcertifier.sectigo.source") == 0)
                 sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_SOURCE, value_str);
             // Add more mappings as needed
@@ -1657,7 +1648,6 @@ static void free_prop_map_values(CertifierPropMap * prop_map)
     FV(prop_map->sectigo_owner_phone_number);
     FV(prop_map->sectigo_owner_email);
     FV(prop_map->sectigo_cert_type);
-    FV(prop_map->sectigo_tracking_id);
     FV(prop_map->sectigo_source);
     FV(prop_map->sectigo_url);
 }
@@ -1669,6 +1659,16 @@ CertifierPropMap * property_new_sectigo(void)
     {
         log_error("Could not initialize CertifierPropMap.");
         return NULL;
+    }
+
+    char * trace_id = NULL;
+
+    // generate tracking ID
+    trace_id = util_generate_random_value(16, ALLOWABLE_CHARACTERS);
+    if (trace_id)
+    {
+        property_set(prop_map, CERTIFIER_OPT_TRACKING_ID, trace_id);
+        XFREE(trace_id);
     }
     
     return prop_map;

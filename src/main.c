@@ -707,10 +707,6 @@ SECTIGO_CLIENT_ERROR_CODE sectigo_process(SECTIGO_MODE mode, sectigo_parameter_t
         sectigo_parameter->sectigo_get_cert_param.sectigo_url = optarg;
         certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_URL, optarg);
         break;
-    case 'W':
-        sectigo_parameter->sectigo_get_cert_param.sectigo_tracking_id = optarg;
-        certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_TRACKING_ID, optarg);
-        break;
     case 'Y':
         sectigo_parameter->sectigo_get_cert_param.sectigo_source = optarg;
         certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_SOURCE, optarg);

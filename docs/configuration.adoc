@@ -49,7 +49,6 @@ xref:libcertifier.adoc[*Back to Manual*]
 | libcertifier.sectigo.cert.type   | comodo |
 | libcertifier.sectigo.owner.phone.number   | 1234567890 |
 | libcertifier.sectigo.owner.email   | owner@example.com |
-| libcertifier.sectigo.tracking.id   | 1234 |
 | libcertifier.sectigo.source   | libcertifier |
 |=======
 

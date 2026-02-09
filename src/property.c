@@ -201,25 +201,24 @@ struct _PropMap
     X509_CERT * cert_x509_out;
     char * mtls_filename;
     char * mtls_p12_filename;
-    //Sectigo values
-    char * sectigo_auth_token;
-    char * sectigo_common_name;
-    char * sectigo_group_name;
-    char * sectigo_group_email;
-    char * sectigo_id;
-    char * sectigo_owner_first_name;
-    char * sectigo_owner_last_name;
-    char * sectigo_employee_type;
-    char * sectigo_server_platform;
-    bool sectigo_sensitive;
-    char * sectigo_project_name;
-    char * sectigo_business_justification;
-    char * sectigo_subject_alt_names;
-    char * sectigo_ip_addresses;
-    char * sectigo_owner_phone_number;
-    char * sectigo_owner_email;
-    char * sectigo_cert_type;
-    char * sectigo_source;
+    
+    //Sectigo properties (common properties like auth_token, source, etc. are above)
+    char * common_name;
+    char * group_name;
+    char * group_email;
+    char * id;
+    char * owner_first_name;
+    char * owner_last_name;
+    char * employee_type;
+    char * server_platform;
+    bool sensitive;
+    char * project_name;
+    char * business_justification;
+    char * subject_alt_names;
+    char * ip_addresses;
+    char * owner_phone_number;
+    char * owner_email;
+    char * cert_type;
     char * sectigo_url;
 };
 
@@ -370,58 +369,58 @@ int sectigo_property_set(CertifierPropMap * prop_map, int name, const void * val
             log_set_level(prop_map->log_level);
             break;
         case CERTIFIER_OPT_SECTIGO_AUTH_TOKEN:
-            prop_map->sectigo_auth_token = XSTRDUP((const char *)value);
+            prop_map->auth_token = XSTRDUP((const char *)value);
             break;
         case CERTIFIER_OPT_SECTIGO_COMMON_NAME:
-            prop_map->sectigo_common_name = XSTRDUP((const char *)value);
+            prop_map->common_name = XSTRDUP((const char *)value);
             break;
         case CERTIFIER_OPT_SECTIGO_GROUP_NAME:
-            prop_map->sectigo_group_name = XSTRDUP((const char *)value);
+            prop_map->group_name = XSTRDUP((const char *)value);
             break;
         case CERTIFIER_OPT_SECTIGO_GROUP_EMAIL:
-            prop_map->sectigo_group_email = XSTRDUP((const char *)value);
+            prop_map->group_email = XSTRDUP((const char *)value);
             break;
         case CERTIFIER_OPT_SECTIGO_ID:
-            prop_map->sectigo_id = XSTRDUP((const char *)value);
+            prop_map->id = XSTRDUP((const char *)value);
             break;
         case CERTIFIER_OPT_SECTIGO_OWNER_FIRST_NAME:
-            prop_map->sectigo_owner_first_name = XSTRDUP((const char *)value);
+            prop_map->owner_first_name = XSTRDUP((const char *)value);
             break;
         case CERTIFIER_OPT_SECTIGO_OWNER_LAST_NAME:
-            prop_map->sectigo_owner_last_name = XSTRDUP((const char *)value);
+            prop_map->owner_last_name = XSTRDUP((const char *)value);
             break;
         case CERTIFIER_OPT_SECTIGO_EMPLOYEE_TYPE:
-            prop_map->sectigo_employee_type = XSTRDUP((const char *)value);
+            prop_map->employee_type = XSTRDUP((const char *)value);
             break;
         case CERTIFIER_OPT_SECTIGO_SERVER_PLATFORM:
-            prop_map->sectigo_server_platform = XSTRDUP((const char *)value);
+            prop_map->server_platform = XSTRDUP((const char *)value);
             break;
         case CERTIFIER_OPT_SECTIGO_SENSITIVE:
-            prop_map->sectigo_sensitive = (bool)(size_t)value;
+            prop_map->sensitive = (bool)(size_t)value;
             break;
         case CERTIFIER_OPT_SECTIGO_PROJECT_NAME:
-            prop_map->sectigo_project_name = XSTRDUP((const char *)value);
+            prop_map->project_name = XSTRDUP((const char *)value);
             break;
         case CERTIFIER_OPT_SECTIGO_BUSINESS_JUSTIFICATION:
-            prop_map->sectigo_business_justification = XSTRDUP((const char *)value);
+            prop_map->business_justification = XSTRDUP((const char *)value);
             break;
         case CERTIFIER_OPT_SECTIGO_SUBJECT_ALT_NAMES:
-            prop_map->sectigo_subject_alt_names = XSTRDUP((const char *)value);
+            prop_map->subject_alt_names = XSTRDUP((const char *)value);
             break;
         case CERTIFIER_OPT_SECTIGO_IP_ADDRESSES:
-            prop_map->sectigo_ip_addresses = XSTRDUP((const char *)value);
+            prop_map->ip_addresses = XSTRDUP((const char *)value);
             break;
         case CERTIFIER_OPT_SECTIGO_CERT_TYPE:
-            prop_map->sectigo_cert_type = XSTRDUP((const char *)value);
+            prop_map->cert_type = XSTRDUP((const char *)value);
             break;
         case CERTIFIER_OPT_SECTIGO_OWNER_PHONE_NUMBER:
-            prop_map->sectigo_owner_phone_number = XSTRDUP((const char *)value);
+            prop_map->owner_phone_number = XSTRDUP((const char *)value);
             break;
         case CERTIFIER_OPT_SECTIGO_OWNER_EMAIL:
-            prop_map->sectigo_owner_email = XSTRDUP((const char *)value);
+            prop_map->owner_email = XSTRDUP((const char *)value);
             break;
         case CERTIFIER_OPT_SECTIGO_SOURCE:
-            prop_map->sectigo_source = XSTRDUP((const char *)value);
+            prop_map->source = XSTRDUP((const char *)value);
             break;
         case CERTIFIER_OPT_SECTIGO_URL:
             prop_map->sectigo_url = XSTRDUP((const char *)value);
@@ -894,58 +893,58 @@ void * property_get(CertifierPropMap * prop_map, CERTIFIER_OPT name)
     }
 
     case CERTIFIER_OPT_SECTIGO_AUTH_TOKEN:
-        retval = (void *) prop_map->sectigo_auth_token;
+        retval = (void *) prop_map->auth_token;
         break;
     case CERTIFIER_OPT_SECTIGO_COMMON_NAME:
-        retval = (void *) prop_map->sectigo_common_name;
+        retval = (void *) prop_map->common_name;
         break;
     case CERTIFIER_OPT_SECTIGO_GROUP_NAME:
-        retval = (void *) prop_map->sectigo_group_name;
+        retval = (void *) prop_map->group_name;
         break;
     case CERTIFIER_OPT_SECTIGO_GROUP_EMAIL:
-        retval = (void *) prop_map->sectigo_group_email;
+        retval = (void *) prop_map->group_email;
         break;
     case CERTIFIER_OPT_SECTIGO_ID:
-        retval = (void *) prop_map->sectigo_id;
+        retval = (void *) prop_map->id;
         break;
     case CERTIFIER_OPT_SECTIGO_OWNER_FIRST_NAME:
-        retval = (void *) prop_map->sectigo_owner_first_name;
+        retval = (void *) prop_map->owner_first_name;
         break;
     case CERTIFIER_OPT_SECTIGO_OWNER_LAST_NAME:
-        retval = (void *) prop_map->sectigo_owner_last_name;
+        retval = (void *) prop_map->owner_last_name;
         break;
     case CERTIFIER_OPT_SECTIGO_EMPLOYEE_TYPE:
-        retval = (void *) prop_map->sectigo_employee_type;
+        retval = (void *) prop_map->employee_type;
         break;
     case CERTIFIER_OPT_SECTIGO_SERVER_PLATFORM:
-        retval = (void *) prop_map->sectigo_server_platform;
+        retval = (void *) prop_map->server_platform;
         break;
     case CERTIFIER_OPT_SECTIGO_SENSITIVE:
-        retval = (void *)(size_t) prop_map->sectigo_sensitive;
+        retval = (void *)(size_t) prop_map->sensitive;
         break;
     case CERTIFIER_OPT_SECTIGO_PROJECT_NAME:
-        retval = (void *) prop_map->sectigo_project_name;
+        retval = (void *) prop_map->project_name;
         break;
     case CERTIFIER_OPT_SECTIGO_BUSINESS_JUSTIFICATION:
-        retval = (void *) prop_map->sectigo_business_justification;
+        retval = (void *) prop_map->business_justification;
         break;
     case CERTIFIER_OPT_SECTIGO_SUBJECT_ALT_NAMES:
-        retval = (void *) prop_map->sectigo_subject_alt_names;
+        retval = (void *) prop_map->subject_alt_names;
         break;
     case CERTIFIER_OPT_SECTIGO_IP_ADDRESSES:
-        retval = (void *) prop_map->sectigo_ip_addresses;
+        retval = (void *) prop_map->ip_addresses;
         break;
     case CERTIFIER_OPT_SECTIGO_OWNER_PHONE_NUMBER:
-        retval = (void *) prop_map->sectigo_owner_phone_number;
+        retval = (void *) prop_map->owner_phone_number;
         break;
     case CERTIFIER_OPT_SECTIGO_OWNER_EMAIL:
-        retval = (void *) prop_map->sectigo_owner_email;
+        retval = (void *) prop_map->owner_email;
         break;
     case CERTIFIER_OPT_SECTIGO_CERT_TYPE:
-        retval = (void *) prop_map->sectigo_cert_type;
+        retval = (void *) prop_map->cert_type;
         break;
     case CERTIFIER_OPT_SECTIGO_SOURCE:
-        retval = (void *) prop_map->sectigo_source;
+        retval = (void *) prop_map->source;
         break;
     case CERTIFIER_OPT_SECTIGO_URL:
         retval = (void *) prop_map->sectigo_url;
@@ -1127,116 +1126,451 @@ int property_set_defaults(CertifierPropMap * prop_map)
     return return_code;
 }
 
-int property_set_sectigo_defaults_from_cfg_file(CertifierPropMap * propMap)
+// Helper function to load XPKI-specific fields from JSON object
+static int load_xpki_fields_from_json(CertifierPropMap *propMap, JSON_Object *root)
 {
-    JSON_Value *json;
+    const char *certifier_url_value = NULL;
+    const char *profile_name_value = NULL;
+    const char *auth_type_value = NULL;
+    const char *password_value = NULL;
+    const char *system_id_value = NULL;
+    const char *fabric_id_value = NULL;
+    const char *node_id_value = NULL;
+    const char *product_id_value = NULL;
+    const char *auth_tag_1_value = NULL;
+    int http_timeout_value;
+    int http_connect_timeout_value;
+    int http_trace_value;
+    const char *input_p12_path_value = NULL;
+    const char *sat_token_value = NULL;
+    const char *ca_info_value = NULL;
+    const char *ca_path_value = NULL;
+    const char *ecc_curve_id_value = NULL;
+    const char *log_file_value = NULL;
+    int log_level_value;
+    int log_max_size_value;
+    int measure_performance_value;
+    int autorenew_interval_value;
+    int validity_days;
+    const char *source = NULL;
+    int certificate_lite_value;
+    int certificate_scopes_value;
+    const char *cn_prefix = NULL;
+    const char *ext_key_usage_value = NULL;
+    const char *autorenew_certs_path_list_value = NULL;
+    const char *mtls_p12_path_value = NULL;
+    const char *mtls_password_value = NULL;
+
+    certifier_url_value = json_object_get_string(root, "libcertifier.certifier.url");
+    if (certifier_url_value)
+    {
+        log_info("Loaded certifier url: %s from config file.", certifier_url_value);
+        property_set(propMap, CERTIFIER_OPT_CERTIFIER_URL, certifier_url_value);
+    }
+
+    profile_name_value = json_object_get_string(root, "libcertifier.profile.name");
+    if (profile_name_value)
+    {
+        log_info("Loaded profile name: %s from config file.", profile_name_value);
+        property_set(propMap, CERTIFIER_OPT_PROFILE_NAME, profile_name_value);
+    }
+
+    auth_type_value = json_object_get_string(root, "libcertifier.auth.type");
+    if (auth_type_value)
+    {
+        log_info("Loaded crt.type: %s from config file.", auth_type_value);
+        property_set(propMap, CERTIFIER_OPT_AUTH_TYPE, auth_type_value);
+    }
+
+    password_value = json_object_get_string(root, "libcertifier.input.p12.password");
+    if (password_value)
+    {
+        print_warning("password");
+        log_info("Loaded password from config file.");
+        property_set(propMap, CERTIFIER_OPT_INPUT_P12_PASSWORD, password_value);
+    }
+
+    system_id_value = json_object_get_string(root, "libcertifier.system.id");
+    if (system_id_value)
+    {
+        log_info("Loaded system_id_value: %s from config file.", system_id_value);
+        property_set(propMap, CERTIFIER_OPT_SYSTEM_ID, system_id_value);
+    }
+
+    fabric_id_value = json_object_get_string(root, "libcertifier.fabric.id");
+    if (fabric_id_value)
+    {
+        log_info("Loaded fabric_id_value: %s from config file.", fabric_id_value);
+        property_set(propMap, CERTIFIER_OPT_FABRIC_ID, fabric_id_value);
+    }
+
+    node_id_value = json_object_get_string(root, "libcertifier.node.id");
+    if (node_id_value)
+    {
+        log_info("Loaded node_id_value: %s from config file.", node_id_value);
+        property_set(propMap, CERTIFIER_OPT_NODE_ID, node_id_value);
+    }
+
+    product_id_value = json_object_get_string(root, "libcertifier.product.id");
+    if (product_id_value)
+    {
+        log_info("Loaded product_id_value: %s from config file.", product_id_value);
+        property_set(propMap, CERTIFIER_OPT_PRODUCT_ID, product_id_value);
+    }
+
+    auth_tag_1_value = json_object_get_string(root, "libcertifier.authentication.tag.1");
+    if (auth_tag_1_value)
+    {
+        log_info("Loaded auth_tag_1_value: %s from config file.", auth_tag_1_value);
+        property_set(propMap, CERTIFIER_OPT_AUTH_TAG_1, auth_tag_1_value);
+    }
+
+    http_timeout_value = json_object_get_number(root, "libcertifier.http.timeout");
+    if (http_timeout_value >= 0)
+    {
+        log_info("Loaded http_timeout_value: %i from cfg file.", http_timeout_value);
+        property_set(propMap, CERTIFIER_OPT_HTTP_TIMEOUT, (void *) (size_t) http_timeout_value);
+    }
+
+    http_connect_timeout_value = json_object_get_number(root, "libcertifier.http.connect.timeout");
+    if (http_connect_timeout_value >= 0)
+    {
+        log_info("Loaded http_connect_timeout_value: %i from cfg file.", http_connect_timeout_value);
+        property_set(propMap, CERTIFIER_OPT_HTTP_CONNECT_TIMEOUT, (void *) (size_t) http_connect_timeout_value);
+    }
+
+    http_trace_value = json_object_get_number(root, "libcertifier.http.trace");
+    if (http_trace_value == 1)
+    {
+        log_info("Loaded http_trace_value: %i from cfg file.", http_trace_value);
+        print_warning("http.trace");
+        propMap->options |= (CERTIFIER_OPTION_TRACE_HTTP | CERTIFIER_OPTION_DEBUG_HTTP);
+    }
+
+    measure_performance_value = json_object_get_number(root, "libcertifier.measure.performance");
+    if (measure_performance_value == 1)
+    {
+        log_info("Loaded measure.performance: %i from cfg file.", measure_performance_value);
+        propMap->options |= CERTIFIER_OPTION_MEASURE_PERFORMANCE;
+    }
+
+    autorenew_interval_value = json_object_get_number(root, "libcertifier.autorenew.interval");
+    if (autorenew_interval_value == 1)
+    {
+        log_info("Loaded autorenew.interval: %i from cfg file.", autorenew_interval_value);
+        property_set(propMap, CERTIFIER_OPT_AUTORENEW_INTERVAL, (void *) (size_t) autorenew_interval_value);
+    }
+
+    input_p12_path_value = json_object_get_string(root, "libcertifier.input.p12.path");
+    if (input_p12_path_value)
+    {
+        log_info("Loaded input_p12_path_value: %s from cfg file.", input_p12_path_value);
+        property_set(propMap, CERTIFIER_OPT_INPUT_P12_PATH, input_p12_path_value);
+    }
+
+    sat_token_value = json_object_get_string(root, "libcertifier.sat.token");
+    if (sat_token_value)
+    {
+        log_info("Loaded sat_token_value: %s from cfg file.", sat_token_value);
+        property_set(propMap, CERTIFIER_OPT_AUTH_TOKEN, sat_token_value);
+    }
+
+    ca_info_value = json_object_get_string(root, "libcertifier.ca.info");
+    if (ca_info_value)
+    {
+        log_info("Loaded ca_info_value: %s from cfg file.", ca_info_value);
+        property_set(propMap, CERTIFIER_OPT_CA_INFO, ca_info_value);
+    }
+
+    ca_path_value = json_object_get_string(root, "libcertifier.ca.path");
+    if (ca_path_value)
+    {
+        log_info("Loaded ca_path_value: %s from cfg file.", ca_path_value);
+        property_set(propMap, CERTIFIER_OPT_CA_PATH, ca_path_value);
+    }
+
+    validity_days = json_object_get_number(root, "libcertifier.validity.days");
+    if (validity_days)
+    {
+        log_info("Loaded validity_days: %d", validity_days);
+        property_set(propMap, CERTIFIER_OPT_VALIDITY_DAYS, (void *) (size_t) validity_days);
+    }
+
+    ecc_curve_id_value = json_object_get_string(root, "libcertifier.ecc.curve.id");
+    if (ecc_curve_id_value)
+    {
+        log_info("Loaded ecc_curve_id_value: %s from cfg file.", ecc_curve_id_value);
+        property_set(propMap, CERTIFIER_OPT_ECC_CURVE_ID, ecc_curve_id_value);
+    }
+
+    log_file_value = json_object_get_string(root, "libcertifier.log.file");
+    if (log_file_value)
+    {
+        log_info("Loaded Log File Value: %s from cfg file.", log_file_value);
+        property_set(propMap, CERTIFIER_OPT_LOG_FILENAME, log_file_value);
+    }
+
+    log_level_value = json_object_get_number(root, "libcertifier.log.level");
+    if (log_level_value >= 0)
+    {
+        log_info("Loaded Log Level value: %i from cfg file.", log_level_value);
+        property_set(propMap, CERTIFIER_OPT_LOG_LEVEL, (void *) (size_t) (log_level_value));
+    }
+
+    log_max_size_value = json_object_get_number(root, "libcertifier.log.max.size");
+    if (log_max_size_value >= 0)
+    {
+        log_info("Loaded Log Max Size value: %i from cfg file.", log_max_size_value);
+        property_set(propMap, CERTIFIER_OPT_LOG_MAX_SIZE, (void *) (size_t) (log_max_size_value));
+    }
+    log_set_max_size(propMap->log_max_size);
+
+    source = json_object_get_string(root, "libcertifier.source.id");
+    if (source)
+    {
+        log_info("Loaded source.id %s from cfg file.", source);
+        property_set(propMap, CERTIFIER_OPT_SOURCE, source);
+    }
+
+    certificate_lite_value = json_object_get_number(root, "libcertifier.certificate.lite");
+    if (certificate_lite_value == 1)
+    {
+        log_info("Loaded certificate.lite: %i from cfg file.", certificate_lite_value);
+        print_warning("certificate.lite");
+        propMap->options |= (CERTIFIER_OPTION_CERTIFICATE_LITE);
+    }
+    
+    certificate_scopes_value = json_object_get_number(root, "libcertifier.certificate.scopes");
+    if (certificate_scopes_value == 1)
+    {
+        log_info("Loaded certificate.scopes: %i from cfg file.", certificate_scopes_value);
+        print_warning("certificate.scopes");
+        propMap->options |= (CERTIFIER_OPTION_USE_SCOPES);
+    }
+    
+    cn_prefix = json_object_get_string(root, "libcertifier.cn.name");
+    if (cn_prefix != NULL)
+    {
+        log_info("Loaded Common Name value: %s from cfg file.", cn_prefix);
+        property_set(propMap, CERTIFIER_OPT_CN_PREFIX, cn_prefix);
+    }
+    
+    ext_key_usage_value = json_object_get_string(root, "libcertifier.ext.key.usage");
+    if (ext_key_usage_value)
+    {
+        log_info("Loaded Extended Key Usage Values: %s from cfg file.", ext_key_usage_value);
+        property_set(propMap, CERTIFIER_OPT_EXT_KEY_USAGE, ext_key_usage_value);
+    }
+
+    autorenew_certs_path_list_value = json_object_get_string(root, "libcertifier.autorenew.certs.path.list");
+    if (autorenew_certs_path_list_value)
+    {
+        log_info("Loaded autorenew certs path: %s from config file.", autorenew_certs_path_list_value);
+        property_set(propMap, CERTIFIER_OPT_AUTORENEW_CERTS_PATH_LIST, autorenew_certs_path_list_value);
+    }
+
+    mtls_p12_path_value = json_object_get_string(root, "libcertifier.mtls.p12.path");
+    if (mtls_p12_path_value)
+    {
+        log_info("Loaded mtls_p12_path_value: %s from cfg file.", mtls_p12_path_value);
+        property_set(propMap, CERTIFIER_OPT_MTLS_P12_PATH, mtls_p12_path_value);
+    }
+
+    mtls_password_value = json_object_get_string(root, "libcertifier.mtls.p12.password");
+    if (mtls_password_value)
+    {
+        print_warning("password");
+        log_info("Loaded mTLS password from config file.");
+        property_set(propMap, CERTIFIER_OPT_MTLS_P12_PASSWORD, mtls_password_value);
+    }
+
+    return 0;
+}
+
+// Helper function to load Sectigo-specific fields from JSON object
+static int load_sectigo_fields_from_json(CertifierPropMap *propMap, JSON_Object *root)
+{
+    // Iterate through all keys in the JSON object
+    size_t count = json_object_get_count(root);
+    for (size_t i = 0; i < count; i++) {
+        const char *key = json_object_get_name(root, i);
+        
+        // Only process keys that start with "libcertifier.sectigo."
+        if (strncmp(key, "libcertifier.sectigo.", 21) != 0) {
+            continue;
+        }
+
+        // Special handling for boolean keys
+        if (strcmp(key, "libcertifier.sectigo.sensitive") == 0) {
+            int bool_value = json_object_get_boolean(root, key);
+            if (bool_value != -1) {  // -1 indicates not a boolean
+                log_info("Loaded sectigo sensitive: %s from config file.", bool_value ? "true" : "false");
+                propMap->sensitive = (bool)bool_value;
+            }
+            continue;
+        }
+
+        // Special handling for array keys
+        if (strcmp(key, "libcertifier.sectigo.subject.alt.names") == 0) {
+            const char *array_str = json_object_get_string(root, key);
+            char *csv = NULL;
+            if (array_str) {
+                csv = simple_json_array_to_csv(array_str);
+            }
+            if (!csv) {
+                csv = XSTRDUP(""); // Always set to empty string if missing/empty
+            }
+            log_info("Loaded sectigo subject alt names: %s from config file.", csv);
+            sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_SUBJECT_ALT_NAMES, csv);
+            XFREE(csv);
+            continue;
+        }
+        if (strcmp(key, "libcertifier.sectigo.ip.addresses") == 0) {
+            const char *array_str = json_object_get_string(root, key);
+            char *csv = NULL;
+            if (array_str) {
+                csv = simple_json_array_to_csv(array_str);
+            } else {
+                csv = XSTRDUP("");
+            }
+            log_info("Loaded sectigo IP addresses: %s from config file.", csv);
+            sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_IP_ADDRESSES, csv);
+            XFREE(csv);
+            continue;
+        }
+
+        const char *value_str = json_object_get_string(root, key);
+        if (value_str) {
+            // Map config key to property enum
+            if (strcmp(key, "libcertifier.sectigo.auth.token") == 0) {
+                log_info("Loaded sectigo auth token from config file.");
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_AUTH_TOKEN, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.common.name") == 0) {
+                log_info("Loaded sectigo common name: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_COMMON_NAME, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.group.name") == 0) {
+                log_info("Loaded sectigo group name: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_GROUP_NAME, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.group.email") == 0) {
+                log_info("Loaded sectigo group email: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_GROUP_EMAIL, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.id") == 0) {
+                log_info("Loaded sectigo id: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_ID, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.owner.first.name") == 0) {
+                log_info("Loaded sectigo owner first name: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_OWNER_FIRST_NAME, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.owner.last.name") == 0) {
+                log_info("Loaded sectigo owner last name: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_OWNER_LAST_NAME, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.employee.type") == 0) {
+                log_info("Loaded sectigo employee type: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_EMPLOYEE_TYPE, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.server.platform") == 0) {
+                log_info("Loaded sectigo server platform: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_SERVER_PLATFORM, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.project.name") == 0) {
+                log_info("Loaded sectigo project name: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_PROJECT_NAME, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.business.justification") == 0) {
+                log_info("Loaded sectigo business justification: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_BUSINESS_JUSTIFICATION, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.owner.phone.number") == 0) {
+                log_info("Loaded sectigo owner phone number: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_OWNER_PHONE_NUMBER, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.owner.email") == 0) {
+                log_info("Loaded sectigo owner email: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_OWNER_EMAIL, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.cert.type") == 0) {
+                log_info("Loaded sectigo cert type: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_CERT_TYPE, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.url") == 0) {
+                log_info("Loaded sectigo URL: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_URL, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.source") == 0) {
+                log_info("Loaded sectigo source: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_SOURCE, value_str);
+            }
+            // Add more mappings as needed
+        }
+    }
+
+    return 0;
+}
+
+// Config file loader with mode-aware field loading
+static int property_set_defaults_from_cfg_file_ex(CertifierPropMap *propMap, bool sectigo_mode)
+{
+    JSON_Value *json = NULL;
     int ret = 0;
     char *file_contents = NULL;
     size_t file_contents_len = 0;
+    const char *cfg_filename = propMap->cfg_filename;
 
-    log_info("Loading Sectigo cfg file: %s", propMap->cfg_filename);
+    if (!cfg_filename) {
+        log_warn("No config filename set, skipping defaults from cfg file");
+        return 0;
+    }
 
-    ret = util_slurp(propMap->cfg_filename, &file_contents, &file_contents_len);
+    log_info("Loading %s cfg file: %s", sectigo_mode ? "Sectigo" : "XPKI", cfg_filename);
+    log_debug("property_set_defaults_from_cfg_file_ex called with sectigo_mode=%d", sectigo_mode);
+
+    ret = util_slurp(cfg_filename, &file_contents, &file_contents_len);
     if (ret != 0) {
-        log_error("Failed to read config file: %s", propMap->cfg_filename);
-        if (file_contents) XFREE(file_contents);
+        log_error("Failed to read cfg file: %s (error code: %i)", cfg_filename, ret);
+        if (file_contents) {
+            XFREE(file_contents);
+        }
         return 1;
     }
 
     file_contents[file_contents_len] = '\0';
     json = json_parse_string_with_comments(file_contents);
     XFREE(file_contents);
+
     if (!json) {
-        log_error("Failed to parse JSON config file: %s", propMap->cfg_filename);
+        log_error("Failed to parse JSON from cfg file: %s", cfg_filename);
         return 1;
     }
 
     JSON_Object *root = json_object(json);
-    size_t count = json_object_get_count(root);
-    for (size_t i = 0; i < count; ++i) {
-        const char *key = json_object_get_name(root, i);
-
-        // Only process keys starting with "libcertifier.sectigo."
-        if (strncmp(key, "libcertifier.sectigo.", strlen("libcertifier.sectigo.")) != 0) {
-            continue;
-        }
-
-        
-
-    // Handle boolean for sensitive
-    if (strcmp(key, "libcertifier.sectigo.sensitive") == 0) {
-        int bool_val = json_object_get_boolean(root, key);
-        propMap->sectigo_sensitive = (bool)bool_val;
-        continue;
+    if (!root) {
+        log_error("JSON root object is NULL");
+        json_value_free(json);
+        return 1;
     }
 
-    // Handle arrays for subject alt names and ip addresses
-    if (strcmp(key, "libcertifier.sectigo.subject.alt.names") == 0) {
-    const char *array_str = json_object_get_string(root, key);
-    char *csv = NULL;
-    if (array_str) {
-        csv = simple_json_array_to_csv(array_str);
+    // Delegate to mode-specific field loader
+    if (sectigo_mode) {
+        log_debug("Delegating to load_sectigo_fields_from_json");
+        ret = load_sectigo_fields_from_json(propMap, root);
     } else {
-        csv = XSTRDUP(""); // Always set to empty string if missing/empty
+        log_debug("Delegating to load_xpki_fields_from_json");
+        ret = load_xpki_fields_from_json(propMap, root);
     }
-    sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_SUBJECT_ALT_NAMES, csv);
-    XFREE(csv);
-    continue;
-}
-if (strcmp(key, "libcertifier.sectigo.ip.addresses") == 0) {
-    const char *array_str = json_object_get_string(root, key);
-    char *csv = NULL;
-    if (array_str) {
-        csv = simple_json_array_to_csv(array_str);
-    } else {
-        csv = XSTRDUP("");
-    }
-    sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_IP_ADDRESSES, csv);
-    XFREE(csv);
-    continue;
+
+    json_value_free(json);
+    return ret;
 }
 
-        const char *value_str = json_object_get_string(root, key);
-        if (value_str) {
-            // Map config key to property enum
-            if (strcmp(key, "libcertifier.sectigo.auth.token") == 0)
-                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_AUTH_TOKEN, value_str);
-            else if (strcmp(key, "libcertifier.sectigo.common.name") == 0)
-                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_COMMON_NAME, value_str);
-            else if (strcmp(key, "libcertifier.sectigo.group.name") == 0)
-                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_GROUP_NAME, value_str);
-            else if (strcmp(key, "libcertifier.sectigo.group.email") == 0)
-                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_GROUP_EMAIL, value_str);
-            else if (strcmp(key, "libcertifier.sectigo.id") == 0)
-                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_ID, value_str);
-            else if (strcmp(key, "libcertifier.sectigo.owner.first.name") == 0)
-                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_OWNER_FIRST_NAME, value_str);
-            else if (strcmp(key, "libcertifier.sectigo.owner.last.name") == 0)
-                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_OWNER_LAST_NAME, value_str);
-            else if (strcmp(key, "libcertifier.sectigo.employee.type") == 0)
-                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_EMPLOYEE_TYPE, value_str);
-            else if (strcmp(key, "libcertifier.sectigo.server.platform") == 0)
-                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_SERVER_PLATFORM, value_str);
-            else if (strcmp(key, "libcertifier.sectigo.project.name") == 0)
-                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_PROJECT_NAME, value_str);
-            else if (strcmp(key, "libcertifier.sectigo.business.justification") == 0)
-                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_BUSINESS_JUSTIFICATION, value_str);
-            else if (strcmp(key, "libcertifier.sectigo.owner.phone.number") == 0)
-                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_OWNER_PHONE_NUMBER, value_str);
-            else if (strcmp(key, "libcertifier.sectigo.owner.email") == 0)
-                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_OWNER_EMAIL, value_str);
-            else if (strcmp(key, "libcertifier.sectigo.cert.type") == 0)
-                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_CERT_TYPE, value_str);
-            else if (strcmp(key, "libcertifier.sectigo.url") == 0)
-                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_URL, value_str);
-            else if (strcmp(key, "libcertifier.sectigo.source") == 0)
-                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_SOURCE, value_str);
-            // Add more mappings as needed
-        }
-    }
-
-    if (json) json_value_free(json);
-    return 0;
+int property_set_sectigo_defaults_from_cfg_file(CertifierPropMap * propMap)
+{
+    return property_set_defaults_from_cfg_file_ex(propMap, true);
 }
 
 
@@ -1276,7 +1610,7 @@ int property_set_ext(CertifierPropMap * prop_map)
     ext_key_usage_value = json_object_get_string(json_object(json), "libcertifier.ext.key.usage");
     if (ext_key_usage_value)
     {
-        // log_info("Loaded Extended Key Usage Values: %s", ext_key_usage_value);
+        log_info("Loaded Extended Key Usage Values: %s", ext_key_usage_value);
         property_set(prop_map, CERTIFIER_OPT_EXT_KEY_USAGE, ext_key_usage_value);
     }
 
@@ -1290,298 +1624,7 @@ int property_set_ext(CertifierPropMap * prop_map)
 
 int property_set_defaults_from_cfg_file(CertifierPropMap * propMap)
 {
-
-    JSON_Value * json;
-
-    const char * certifier_url_value = NULL;
-    const char * profile_name_value  = NULL;
-    const char * auth_type_value     = NULL;
-    const char * password_value      = NULL;
-    const char * system_id_value     = NULL;
-    const char * fabric_id_value     = NULL;
-    const char * node_id_value       = NULL;
-    const char * product_id_value    = NULL;
-    const char * auth_tag_1_value    = NULL;
-    int http_timeout_value;
-    int http_connect_timeout_value;
-    int http_trace_value;
-    const char * input_p12_path_value = NULL;
-    const char * sat_token_value      = NULL;
-    const char * ca_info_value        = NULL;
-    const char * ca_path_value        = NULL;
-    const char * ecc_curve_id_value   = NULL;
-    const char * log_file_value       = NULL;
-    int log_level_value;
-    int log_max_size_value;
-    int measure_performance_value;
-    int autorenew_interval_value;
-    int validity_days;
-    const char * source = NULL;
-    int certificate_lite_value;
-    int certificate_scopes_value;
-    const char * cn_prefix                       = NULL;
-    const char * ext_key_usage_value             = NULL;
-    const char * autorenew_certs_path_list_value = NULL;
-    const char * mtls_p12_path_value             = NULL;
-    const char * mtls_password_value             = NULL;
-
-    int ret = 0;
-
-    char * file_contents     = NULL;
-    size_t file_contents_len = 0;
-
-    log_info("Loading cfg file: %s", propMap->cfg_filename);
-
-    log_debug("About to call: util_slurp with path: %s", propMap->cfg_filename);
-    ret = util_slurp(propMap->cfg_filename, &file_contents, &file_contents_len);
-    if (ret != 0)
-    {
-        log_error("Received code: %i from util_slurp", ret);
-        if (file_contents != NULL)
-        {
-            XFREE(file_contents);
-        }
-        return 1;
-    }
-    else
-    {
-        file_contents[file_contents_len] = '\0';
-        json                             = json_parse_string_with_comments(file_contents);
-        XFREE(file_contents);
-        if (json == NULL)
-        {
-            log_error("json_parse_string_with_comments returned a NULL value.  Perhaps JSON malformed? Received error code: <%i>",
-                      ret);
-            return 1;
-        }
-    }
-
-    certifier_url_value = json_object_get_string(json_object(json), "libcertifier.certifier.url");
-    if (certifier_url_value)
-    {
-        log_info("Loaded certifier url: %s from config file.", certifier_url_value);
-        property_set(propMap, CERTIFIER_OPT_CERTIFIER_URL, certifier_url_value);
-    }
-
-    profile_name_value = json_object_get_string(json_object(json), "libcertifier.profile.name");
-    if (profile_name_value)
-    {
-        log_info("Loaded profile name: %s from config file.", profile_name_value);
-        property_set(propMap, CERTIFIER_OPT_PROFILE_NAME, profile_name_value);
-    }
-
-    auth_type_value = json_object_get_string(json_object(json), "libcertifier.auth.type");
-    if (auth_type_value)
-    {
-        log_info("Loaded crt.type: %s from config file.", auth_type_value);
-        property_set(propMap, CERTIFIER_OPT_AUTH_TYPE, auth_type_value);
-    }
-
-    password_value = json_object_get_string(json_object(json), "libcertifier.input.p12.password");
-    if (password_value)
-    {
-        print_warning("password");
-        log_info("Loaded password from config file.");
-        property_set(propMap, CERTIFIER_OPT_INPUT_P12_PASSWORD, password_value);
-    }
-
-    system_id_value = json_object_get_string(json_object(json), "libcertifier.system.id");
-    if (system_id_value)
-    {
-        log_info("Loaded system_id_value: %s from config file.", system_id_value);
-        property_set(propMap, CERTIFIER_OPT_SYSTEM_ID, system_id_value);
-    }
-
-    fabric_id_value = json_object_get_string(json_object(json), "libcertifier.fabric.id");
-    if (fabric_id_value)
-    {
-        log_info("Loaded fabric_id_value: %s from config file.", fabric_id_value);
-        property_set(propMap, CERTIFIER_OPT_FABRIC_ID, fabric_id_value);
-    }
-
-    node_id_value = json_object_get_string(json_object(json), "libcertifier.node.id");
-    if (node_id_value)
-    {
-        log_info("Loaded node_id_value: %s from config file.", node_id_value);
-        property_set(propMap, CERTIFIER_OPT_NODE_ID, node_id_value);
-    }
-
-    product_id_value = json_object_get_string(json_object(json), "libcertifier.product.id");
-    if (product_id_value)
-    {
-        log_info("Loaded product_id_value: %s from config file.", product_id_value);
-        property_set(propMap, CERTIFIER_OPT_PRODUCT_ID, product_id_value);
-    }
-
-    auth_tag_1_value = json_object_get_string(json_object(json), "libcertifier.authentication.tag.1");
-    if (auth_tag_1_value)
-    {
-        log_info("Loaded auth_tag_1_value: %s from config file.", auth_tag_1_value);
-        property_set(propMap, CERTIFIER_OPT_AUTH_TAG_1, auth_tag_1_value);
-    }
-
-    http_timeout_value = json_object_get_number(json_object(json), "libcertifier.http.timeout");
-    if (http_timeout_value >= 0)
-    {
-        log_info("Loaded http_timeout_value: %i from cfg file.", http_timeout_value);
-        property_set(propMap, CERTIFIER_OPT_HTTP_TIMEOUT, (void *) (size_t) http_timeout_value);
-    }
-
-    http_connect_timeout_value = json_object_get_number(json_object(json), "libcertifier.http.connect.timeout");
-    if (http_connect_timeout_value >= 0)
-    {
-        log_info("Loaded http_connect_timeout_value: %i from cfg file.", http_connect_timeout_value);
-        property_set(propMap, CERTIFIER_OPT_HTTP_CONNECT_TIMEOUT, (void *) (size_t) http_connect_timeout_value);
-    }
-
-    http_trace_value = json_object_get_number(json_object(json), "libcertifier.http.trace");
-    if (http_trace_value == 1)
-    {
-        log_info("Loaded http_trace_value: %i from cfg file.", http_trace_value);
-        print_warning("http.trace");
-        propMap->options |= (CERTIFIER_OPTION_TRACE_HTTP | CERTIFIER_OPTION_DEBUG_HTTP);
-    }
-
-    measure_performance_value = json_object_get_number(json_object(json), "libcertifier.measure.performance");
-    if (measure_performance_value == 1)
-    {
-        log_info("Loaded measure.performance: %i from cfg file.", measure_performance_value);
-        propMap->options |= CERTIFIER_OPTION_MEASURE_PERFORMANCE;
-    }
-
-    autorenew_interval_value = json_object_get_number(json_object(json), "libcertifier.autorenew.interval");
-    if (autorenew_interval_value == 1)
-    {
-        log_info("Loaded autorenew.interval: %i from cfg file.", autorenew_interval_value);
-        property_set(propMap, CERTIFIER_OPT_AUTORENEW_INTERVAL, (void *) (size_t) autorenew_interval_value);
-    }
-
-    input_p12_path_value = json_object_get_string(json_object(json), "libcertifier.input.p12.path");
-    if (input_p12_path_value)
-    {
-        log_info("Loaded input_p12_path_value: %s from cfg file.", input_p12_path_value);
-        property_set(propMap, CERTIFIER_OPT_INPUT_P12_PATH, input_p12_path_value);
-    }
-
-    sat_token_value = json_object_get_string(json_object(json), "libcertifier.sat.token");
-    if (sat_token_value)
-    {
-        log_info("Loaded sat_token_value: %s from cfg file.", sat_token_value);
-        property_set(propMap, CERTIFIER_OPT_AUTH_TOKEN, sat_token_value);
-    }
-
-    ca_info_value = json_object_get_string(json_object(json), "libcertifier.ca.info");
-    if (ca_info_value)
-    {
-        log_info("Loaded ca_info_value: %s from cfg file.", ca_info_value);
-        property_set(propMap, CERTIFIER_OPT_CA_INFO, ca_info_value);
-    }
-
-    ca_path_value = json_object_get_string(json_object(json), "libcertifier.ca.path");
-    if (ca_path_value)
-    {
-        log_info("Loaded ca_path_value: %s from cfg file.", ca_path_value);
-        property_set(propMap, CERTIFIER_OPT_CA_PATH, ca_path_value);
-    }
-
-    validity_days = json_object_get_number(json_object(json), "libcertifier.validity.days");
-    if (validity_days)
-    {
-        log_info("Loaded validity_days: %d", validity_days);
-        property_set(propMap, CERTIFIER_OPT_VALIDITY_DAYS, (void *) (size_t) validity_days);
-    }
-
-    ecc_curve_id_value = json_object_get_string(json_object(json), "libcertifier.ecc.curve.id");
-    if (ecc_curve_id_value)
-    {
-        log_info("Loaded ecc_curve_id_value: %s from cfg file.", ecc_curve_id_value);
-        property_set(propMap, CERTIFIER_OPT_ECC_CURVE_ID, ecc_curve_id_value);
-    }
-
-    log_file_value = json_object_get_string(json_object(json), "libcertifier.log.file");
-    if (log_file_value)
-    {
-        log_info("Loaded Log File Value: %s from cfg file.", log_file_value);
-        property_set(propMap, CERTIFIER_OPT_LOG_FILENAME, log_file_value);
-    }
-
-    log_level_value = json_object_get_number(json_object(json), "libcertifier.log.level");
-    if (log_level_value >= 0)
-    {
-        log_info("Loaded Log Level value: %i from cfg file.", log_level_value);
-        property_set(propMap, CERTIFIER_OPT_LOG_LEVEL, (void *) (size_t) (log_level_value));
-    }
-
-    log_max_size_value = json_object_get_number(json_object(json), "libcertifier.log.max.size");
-    if (log_max_size_value >= 0)
-    {
-        log_info("Loaded Log Max Size value: %i from cfg file.", log_max_size_value);
-        property_set(propMap, CERTIFIER_OPT_LOG_MAX_SIZE, (void *) (size_t) (log_max_size_value));
-    }
-    log_set_max_size(propMap->log_max_size);
-
-    source = json_object_get_string(json_object(json), "libcertifier.source.id");
-    if (source)
-    {
-        log_info("Loaded source.id %s from cfg file.", source);
-        property_set(propMap, CERTIFIER_OPT_SOURCE, source);
-    }
-
-    certificate_lite_value = json_object_get_number(json_object(json), "libcertifier.certificate.lite");
-    if (certificate_lite_value == 1)
-    {
-        log_info("Loaded certificate.lite: %i from cfg file.", certificate_lite_value);
-        print_warning("certificate.lite");
-        propMap->options |= (CERTIFIER_OPTION_CERTIFICATE_LITE);
-    }
-    certificate_scopes_value = json_object_get_number(json_object(json), "libcertifier.certificate.scopes");
-    if (certificate_scopes_value == 1)
-    {
-        log_info("Loaded certificate.scopes: %i from cfg file.", certificate_scopes_value);
-        print_warning("certificate.scopes");
-        propMap->options |= (CERTIFIER_OPTION_USE_SCOPES);
-    }
-    cn_prefix = json_object_get_string(json_object(json), "libcertifier.cn.name");
-    if (cn_prefix != NULL)
-    {
-        log_info("Loaded Common Name value: %s from cfg file.", cn_prefix);
-        property_set(propMap, CERTIFIER_OPT_CN_PREFIX, cn_prefix);
-    }
-    ext_key_usage_value = json_object_get_string(json_object(json), "libcertifier.ext.key.usage");
-    if (ext_key_usage_value)
-    {
-        log_info("Loaded Extended Key Usage Values: %s from cfg file.", ext_key_usage_value);
-        property_set(propMap, CERTIFIER_OPT_EXT_KEY_USAGE, ext_key_usage_value);
-    }
-
-    autorenew_certs_path_list_value = json_object_get_string(json_object(json), "libcertifier.autorenew.certs.path.list");
-    if (autorenew_certs_path_list_value)
-    {
-        log_info("Loaded autorenew certs path: %s from config file.", autorenew_certs_path_list_value);
-        property_set(propMap, CERTIFIER_OPT_AUTORENEW_CERTS_PATH_LIST, autorenew_certs_path_list_value);
-    }
-
-    mtls_p12_path_value = json_object_get_string(json_object(json), "libcertifier.mtls.p12.path");
-    if (mtls_p12_path_value)
-    {
-        log_info("Loaded mtls_p12_path_value: %s from cfg file.", mtls_p12_path_value);
-        property_set(propMap, CERTIFIER_OPT_MTLS_P12_PATH, mtls_p12_path_value);
-    }
-
-    mtls_password_value = json_object_get_string(json_object(json), "libcertifier.mtls.p12.password");
-    if (mtls_password_value)
-    {
-        print_warning("password");
-        log_info("Loaded mTLS password from config file.");
-        property_set(propMap, CERTIFIER_OPT_MTLS_P12_PASSWORD, mtls_password_value);
-    }
-
-    if (json)
-    {
-        json_value_free(json);
-    }
-
-    return 0;
+    return property_set_defaults_from_cfg_file_ex(propMap, false);
 }
 
 #define FV(field)                                                                                                                  \
@@ -1632,23 +1675,23 @@ static void free_prop_map_values(CertifierPropMap * prop_map)
     security_free_cert(prop_map->cert_x509_out);
     FV(prop_map->mtls_filename);
     FV(prop_map->mtls_p12_filename);
-    FV(prop_map->sectigo_auth_token);
-    FV(prop_map->sectigo_common_name);
-    FV(prop_map->sectigo_group_name);
-    FV(prop_map->sectigo_group_email);
-    FV(prop_map->sectigo_id);
-    FV(prop_map->sectigo_owner_first_name);
-    FV(prop_map->sectigo_owner_last_name);
-    FV(prop_map->sectigo_employee_type);
-    FV(prop_map->sectigo_server_platform);
-    FV(prop_map->sectigo_project_name);
-    FV(prop_map->sectigo_business_justification);
-    FV(prop_map->sectigo_subject_alt_names);
-    FV(prop_map->sectigo_ip_addresses);
-    FV(prop_map->sectigo_owner_phone_number);
-    FV(prop_map->sectigo_owner_email);
-    FV(prop_map->sectigo_cert_type);
-    FV(prop_map->sectigo_source);
+    FV(prop_map->auth_token);
+    FV(prop_map->common_name);
+    FV(prop_map->group_name);
+    FV(prop_map->group_email);
+    FV(prop_map->id);
+    FV(prop_map->owner_first_name);
+    FV(prop_map->owner_last_name);
+    FV(prop_map->employee_type);
+    FV(prop_map->server_platform);
+    FV(prop_map->project_name);
+    FV(prop_map->business_justification);
+    FV(prop_map->subject_alt_names);
+    FV(prop_map->ip_addresses);
+    FV(prop_map->owner_phone_number);
+    FV(prop_map->owner_email);
+    FV(prop_map->cert_type);
+    FV(prop_map->source);
     FV(prop_map->sectigo_url);
 }
 

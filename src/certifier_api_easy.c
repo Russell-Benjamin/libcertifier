@@ -106,10 +106,10 @@
     { "auth-token", required_argument, NULL, 'K' }, \
     { "group-name", required_argument, NULL, 'G' }, \
     { "group-email", required_argument, NULL, 'E' }, \
-    { "owner-fname", required_argument, NULL, 'O' }, \
-    { "owner-lname", required_argument, NULL, 'J' }, \
+    { "owner-first-name", required_argument, NULL, 'O' }, \
+    { "owner-last-name", required_argument, NULL, 'J' }, \
     { "owner-email", required_argument, NULL, 'Z' }, \
-    { "owner-phonenum", required_argument, NULL, 'U' }, \
+    { "owner-phone-number", required_argument, NULL, 'U' }, \
     { "cert-type", required_argument, NULL, 'T' }, \
     { "config", required_argument, NULL, 'l' }, \
     { "tracking-id", required_argument, NULL, 'W' }, \
@@ -157,7 +157,7 @@ static size_t get_command_opt_index(command_opt_lut_t * command_opt_lut, size_t 
     return -1;
 }
 
-static const char * get_command_opt_helper(CERTIFIER_MODE mode)
+static const char * get_xpki_command_opt_helper(CERTIFIER_MODE mode)
 {
 #define BASE_HELPER                                                                                                                \
     "Usage:  certifierUtil %s [OPTIONS]\n"                                                                                         \
@@ -788,7 +788,6 @@ static int do_sectigo_get_cert(CERTIFIER * easy)
         return CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
     }
 
-
     return_code = certifier_setup_keys(easy->certifier);
     if (return_code != 0) {
         finish_operation(easy, return_code, NULL);
@@ -802,10 +801,9 @@ static int do_sectigo_get_cert(CERTIFIER * easy)
         return rc.application_error_code;
     }
     
-    // Call Sectigo client to request certificate
+    // Call Sectigo API to request certificate
     CertifierPropMap * props = certifier_easy_api_get_props(easy->certifier);
     rc = sectigo_client_request_certificate(props, (unsigned char *)csr_pem, certifier_get_node_address(easy->certifier), NULL, &cert);
-
     
     XFREE(csr_pem);
 
@@ -861,7 +859,7 @@ int certifier_api_easy_print_helper(CERTIFIER * easy)
                  "renew-cert\n"
                  "print-cert\n"
                  "revoke\n"
-                 "get-sectigo-cert");
+                 "get-sectigo-cert\n");
     }
 
     return 0;
@@ -956,7 +954,7 @@ static int process_command_line(CERTIFIER * easy)
         switch (opt)
         {
         case 'h':
-            XFPRINTF(stdout, get_command_opt_helper(easy->mode), easy->argv[0]);
+            XFPRINTF(stdout, get_xpki_command_opt_helper(easy->mode), easy->argv[0]);
             exit(1);
         case 'c':
             return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_CA_PATH, optarg);
@@ -1155,63 +1153,66 @@ static int process_command_line(CERTIFIER * easy)
             return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_LOG_LEVEL, (void *) (size_t) 0);
             break;
         case 'C': // common-name
-        if (optarg) {
-        return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_COMMON_NAME, optarg);
-        }
+            if (optarg) 
+            {
+                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_COMMON_NAME, optarg);
+            }
             break;
         case 'I': // id
-        if (optarg) {
-        return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_ID, optarg);
-        }
+            if (optarg) 
+            {
+                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_ID, optarg);
+            }
             break;
         case 'e': // employee-type
-        if (optarg) {
-        // Validate allowed values: "fte", "contractor", "associate"
-        if (strcmp(optarg, "fte") && strcmp(optarg, "contractor") && strcmp(optarg, "associate")) {
-            log_error("Invalid employee-type: %s. Allowed: fte, contractor, associate.", optarg);
-            return_code = 1;
-            break;
-        }
-        return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_EMPLOYEE_TYPE, optarg);
-        }
+            if (optarg) {
+                // Validate allowed values: "fte", "contractor", "associate"
+                if (strcmp(optarg, "fte") && strcmp(optarg, "contractor") && strcmp(optarg, "associate")) {
+                    log_error("Invalid employee-type: %s. Allowed: fte, contractor, associate.", optarg);
+                    return_code = 1;
+                    break;
+                }
+            
+                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_EMPLOYEE_TYPE, optarg);
+            }
             break;
         case 's': // server-platform
-        if (optarg) {
-        return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_SERVER_PLATFORM, optarg);
-        }
+            if (optarg) {
+                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_SERVER_PLATFORM, optarg);
+            }
             break;
         case 'N': // sensitive
-        return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_SENSITIVE, (void *)true);
+            return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_SENSITIVE, (void *)true);
             break;
         case 'r': // project-name
-        if (optarg) {
-        return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_PROJECT_NAME, optarg);
-        }
+            if (optarg) {
+                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_PROJECT_NAME, optarg);
+            }
             break;
         case 'b': // business-justification
-        if (optarg) {
-        return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_BUSINESS_JUSTIFICATION, optarg);
-        }
+            if (optarg) {
+                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_BUSINESS_JUSTIFICATION, optarg);
+            }
             break;
         case 'A': // subject-alt-names
-        if (optarg) {
-        return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_SUBJECT_ALT_NAMES, optarg);
-        }
+            if (optarg) {
+                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_SUBJECT_ALT_NAMES, optarg);
+            }
             break;
         case 'x': // ip-addresses
-        if (optarg) {
-        return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_IP_ADDRESSES, optarg);
-        }
+            if (optarg) {
+                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_IP_ADDRESSES, optarg);
+            }
             break;
         case 'K': // auth-token
-        if (optarg) {
-        return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_AUTH_TOKEN, optarg);
-        }
+            if (optarg) {
+                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_AUTH_TOKEN, optarg);
+            }
             break;
         case 'u': // sectigo url
-        if (optarg) {
-        return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_URL, optarg);
-        }
+            if (optarg) {
+                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_URL, optarg);
+            }
         case 'G': // group-name
             if (optarg) {
                 return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_GROUP_NAME, optarg);
@@ -1222,12 +1223,12 @@ static int process_command_line(CERTIFIER * easy)
                 return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_GROUP_EMAIL, optarg);
             }
             break;
-        case 'O': // owner-fname
+        case 'O': // owner-first-name
             if (optarg) {
                 return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_OWNER_FIRST_NAME, optarg);
             }
             break;
-        case 'J': // owner-lname
+        case 'J': // owner-last-name
             if (optarg) {
                 return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_OWNER_LAST_NAME, optarg);
             }
@@ -1248,7 +1249,7 @@ static int process_command_line(CERTIFIER * easy)
             }
             break;
         case 'Y': //source
-            if(optarg){
+            if (optarg){
                 return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_SOURCE, optarg);
             }
         case '?':

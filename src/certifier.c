@@ -1008,50 +1008,52 @@ int certifier_set_property(Certifier * certifier, int name, const void * value)
     int return_code        = 0;
 
     if (certifier->sectigo_mode) {
-        // Only set Sectigo properties for Sectigo flows
+        // Only set Sectigo properties for Sectigo logical flow
         return_code = sectigo_property_set(certifier->prop_map, name, value);
     } else {
-        // Only set XPKI properties for XPKI flows
+        // Only set XPKI properties for XPKI logical flow
         return_code = property_set(certifier->prop_map, name, value);
     }
+
     if (return_code != 0)
     {
         return CERTIFIER_ERR_PROPERTY_SET + return_code;
     }
 
-   switch (name)
-{
-    case CERTIFIER_OPT_CFG_FILENAME: {
-    log_info("Configuration file changed; loading settings");
+    switch (name)
+    {
+    case CERTIFIER_OPT_CFG_FILENAME: 
+    {
+        log_info("Configuration file changed; loading settings");
 
-    CertifierPropMap *orig = certifier->prop_map;
-    int loader_result = 0;
+        CertifierPropMap *orig = certifier->prop_map;
 
-    if (value != NULL) {
-        if (certifier->sectigo_mode) {
-            
-            loader_result = sectigo_load_cfg_file(certifier);
-            if (loader_result != 0) {
-                log_warn("Failed to load Sectigo configuration!");
-                return CERTIFIER_ERR_PROPERTY_SET + loader_result;
-            }
-        } else {
-            loader_result = certifier_load_cfg_file(certifier);
-            if (loader_result == 0) {
+        if (value != NULL) {
+            if (certifier->sectigo_mode) {
                 
-                property_destroy(orig);
-                
+                return_code = sectigo_load_cfg_file(certifier);
+                if (return_code != 0) {
+                    log_warn("Failed to load Sectigo configuration!");
+                    return CERTIFIER_ERR_PROPERTY_SET + return_code;
+                }
             } else {
-                property_destroy(certifier->prop_map);
-                certifier->prop_map = orig;
-                loader_result = property_set(certifier->prop_map, name, property_get(orig, name));
-                log_warn("Failed to load configuration (configuration unmodified)!");
-                return CERTIFIER_ERR_PROPERTY_SET + loader_result;
+                return_code = certifier_load_cfg_file(certifier);
+                if (return_code == 0) {
+                    
+                    property_destroy(orig);
+                    
+                } else {
+                    property_destroy(certifier->prop_map);
+                    certifier->prop_map = orig;
+                    return_code = property_set(certifier->prop_map, name, property_get(orig, name));
+                    log_warn("Failed to load configuration (configuration unmodified)!");
+                    return CERTIFIER_ERR_PROPERTY_SET + return_code;
+                }
             }
         }
+
+        break;
     }
-    break;
-}
 
     case CERTIFIER_OPT_LOG_FUNCTION:
         certifier_set_log_callback(certifier, value);

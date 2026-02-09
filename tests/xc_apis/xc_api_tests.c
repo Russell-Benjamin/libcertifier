@@ -240,28 +240,28 @@ static void test_get_cert_validity()
 static void test_get_sectigo_cert()
 {
     SECTIGO_CLIENT_ERROR_CODE error;
-    get_cert_sectigo_param_t params = { 0 };
+    sectigo_get_cert_param_t params = { 0 };
 
     // Fill parameters (simulate config or CLI)
-    params.sectigo_auth_token           = "token";
-    params.sectigo_common_name          = "sectigotest.comcast.com";
-    params.sectigo_group_name           = "GroupName";
-    params.sectigo_group_email          = "example@comcast.com";
-    params.sectigo_id                   = "exid";
-    params.sectigo_owner_first_name     = "First";
-    params.sectigo_owner_last_name      = "Last";
-    params.sectigo_employee_type        = "associate";
-    params.sectigo_server_platform      = "other";
-    params.sectigo_sensitive            = "false";
-    params.sectigo_project_name         = "Testing create with SAT";
-    params.sectigo_business_justification = "Testing create with SAT";
-    params.sectigo_subject_alt_names    = "*";
-    params.sectigo_ip_addresses         = "*";
-    params.sectigo_cert_type            = "comodo";
-    params.sectigo_owner_phone_number   = "2670000000";
-    params.sectigo_owner_email          = "first_last@comcast.com";
+    params.auth_token           = "token";
+    params.common_name          = "sectigotest.comcast.com";
+    params.group_name           = "GroupName";
+    params.group_email          = "example@comcast.com";
+    params.id                   = "exid";
+    params.owner_first_name     = "First";
+    params.owner_last_name      = "Last";
+    params.employee_type        = "associate";
+    params.server_platform      = "other";
+    params.sensitive            = "false";
+    params.project_name         = "Testing create with SAT";
+    params.business_justification = "Testing create with SAT";
+    params.subject_alt_names    = "*";
+    params.ip_addresses         = "*";
+    params.cert_type            = "comodo";
+    params.owner_phone_number   = "2670000000";
+    params.owner_email          = "first_last@comcast.com";
     params.sectigo_url                  = "https://certs-dev.xpki.io/api/createCertificate";
-    params.sectigo_source               = "libcertifier";
+    params.source               = "libcertifier";
 
     // Call the API
     error = xc_sectigo_get_cert(&params);

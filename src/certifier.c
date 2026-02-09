@@ -388,8 +388,6 @@ static int save_x509certs_to_filesystem(Certifier * certifier, char * x509_certs
     CertifierError certifier_err_info = CERTIFIER_ERROR_INITIALIZER;
     X509_LIST * certs                 = NULL;
     const char * password             = NULL;
-    unsigned char *x509_der;
-    size_t x509_len;
 
     log_info("\nTrimming x509 certificates...\n");
     util_trim(x509_certs);
@@ -875,14 +873,14 @@ CertifierPropMap * _certifier_get_properties(Certifier * certifier)
 void _certifier_set_x509_cert(Certifier * certifier, const X509_CERT * cert)
 {
     security_free_cert(certifier->tmp_map.x509_cert);
-    X509_CERT * tmp = NULL;
+    const X509_CERT * tmp = NULL;
 
     if (cert != NULL)
     {
         tmp = cert;
     }
 
-    certifier->tmp_map.x509_cert = tmp;
+    certifier->tmp_map.x509_cert = (X509_CERT *)tmp;
 }
 
 void _certifier_set_ecc_key(Certifier * certifier, const ECC_KEY * key)
@@ -1008,7 +1006,6 @@ int certifier_set_property(Certifier * certifier, int name, const void * value)
     NULL_CHECK(certifier);
 
     int return_code        = 0;
-    const void * origValue = property_get(certifier->prop_map, name);
 
     if (certifier->sectigo_mode) {
         // Only set Sectigo properties for Sectigo flows

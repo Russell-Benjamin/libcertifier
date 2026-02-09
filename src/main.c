@@ -92,7 +92,7 @@ XPKI_MODE xpki_get_mode(int argc, char ** argv)
         { "help", XPKI_MODE_PRINT_HELP },       { "version", XPKI_MODE_PRINT_VERSION },
         { "get-cert", XPKI_MODE_GET_CERT },     { "get-cert-status", XPKI_MODE_GET_CERT_STATUS },
         { "renew-cert", XPKI_MODE_RENEW_CERT }, { "print-cert", XPKI_MODE_PRINT_CERT },
-        { "revoke", XPKI_CLIENT_CERT_REVOKED },
+        { "revoke", XPKI_MODE_REVOKE_CERT },
     };
 
     for (int i = 0; i < sizeof(command_map) / sizeof(command_map_t); ++i)
@@ -789,7 +789,7 @@ XPKI_CLIENT_ERROR_CODE xpki_perform(int argc, char ** argv)
     case XPKI_MODE_GET_CERT_STATUS: {
         XPKI_CLIENT_CERT_STATUS status;
         ReturnErrorOnFailure(xc_get_cert_status(&xc_parameter.get_cert_status_param, &status));
-        return status;
+        return (XPKI_CLIENT_ERROR_CODE)status;
     }
     break;
     case XPKI_MODE_RENEW_CERT:

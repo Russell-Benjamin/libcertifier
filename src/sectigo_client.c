@@ -59,71 +59,71 @@ SECTIGO_CLIENT_ERROR_CODE xc_sectigo_get_default_cert_param(get_cert_sectigo_par
     void * param = NULL;
 
     param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_AUTH_TOKEN);
-params->sectigo_auth_token = param ? XSTRDUP((const char *)param) : NULL;
+    params->sectigo_auth_token = param ? XSTRDUP((const char *)param) : NULL;
 
-param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_COMMON_NAME);
-params->sectigo_common_name = param ? XSTRDUP((const char *)param) : NULL;
+    param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_COMMON_NAME);
+    params->sectigo_common_name = param ? XSTRDUP((const char *)param) : NULL;
 
-param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_GROUP_NAME);
-params->sectigo_group_name = param ? XSTRDUP((const char *)param) : NULL;
+    param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_GROUP_NAME);
+    params->sectigo_group_name = param ? XSTRDUP((const char *)param) : NULL;
 
-param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_GROUP_EMAIL);
-params->sectigo_group_email = param ? XSTRDUP((const char *)param) : NULL;
+    param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_GROUP_EMAIL);
+    params->sectigo_group_email = param ? XSTRDUP((const char *)param) : NULL;
 
-param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_ID);
-params->sectigo_id = param ? XSTRDUP((const char *)param) : NULL;
+    param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_ID);
+    params->sectigo_id = param ? XSTRDUP((const char *)param) : NULL;
 
-param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_OWNER_FIRST_NAME);
-params->sectigo_owner_first_name = param ? XSTRDUP((const char *)param) : NULL;
+    param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_OWNER_FIRST_NAME);
+    params->sectigo_owner_first_name = param ? XSTRDUP((const char *)param) : NULL;
 
-param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_OWNER_LAST_NAME);
-params->sectigo_owner_last_name = param ? XSTRDUP((const char *)param) : NULL;
-param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_EMPLOYEE_TYPE);
-params->sectigo_employee_type = param ? XSTRDUP((const char *)param) : NULL;
+    param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_OWNER_LAST_NAME);
+    params->sectigo_owner_last_name = param ? XSTRDUP((const char *)param) : NULL;
+    
+    param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_EMPLOYEE_TYPE);
+    params->sectigo_employee_type = param ? XSTRDUP((const char *)param) : NULL;
 
-param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_SERVER_PLATFORM);
-params->sectigo_server_platform = param ? XSTRDUP((const char *)param) : NULL;
+    param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_SERVER_PLATFORM);
+    params->sectigo_server_platform = param ? XSTRDUP((const char *)param) : NULL;
 
-param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_PROJECT_NAME);
-params->sectigo_project_name = param ? XSTRDUP((const char *)param) : NULL;
+    param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_PROJECT_NAME);
+    params->sectigo_project_name = param ? XSTRDUP((const char *)param) : NULL;
 
-param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_BUSINESS_JUSTIFICATION);
-params->sectigo_business_justification = param ? XSTRDUP((const char *)param) : NULL;
+    param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_BUSINESS_JUSTIFICATION);
+    params->sectigo_business_justification = param ? XSTRDUP((const char *)param) : NULL;
 
-param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_SUBJECT_ALT_NAMES);
-params->sectigo_subject_alt_names = param ? XSTRDUP((const char *)param) : NULL;
+    param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_SUBJECT_ALT_NAMES);
+    params->sectigo_subject_alt_names = param ? XSTRDUP((const char *)param) : NULL;
 
-param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_IP_ADDRESSES);
-params->sectigo_ip_addresses = param ? XSTRDUP((const char *)param) : NULL;
+    param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_IP_ADDRESSES);
+    params->sectigo_ip_addresses = param ? XSTRDUP((const char *)param) : NULL;
 
-param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_CERT_TYPE);
-params->sectigo_cert_type = param ? XSTRDUP((const char *)param) : NULL;
+    param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_CERT_TYPE);
+    params->sectigo_cert_type = param ? XSTRDUP((const char *)param) : NULL;
 
-param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_OWNER_PHONE_NUMBER);
-params->sectigo_owner_phone_number = param ? XSTRDUP((const char *)param) : NULL;
+    param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_OWNER_PHONE_NUMBER);
+    params->sectigo_owner_phone_number = param ? XSTRDUP((const char *)param) : NULL;
 
-param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_OWNER_EMAIL);
-params->sectigo_owner_email = param ? XSTRDUP((const char *)param) : NULL;
+    param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_OWNER_EMAIL);
+    params->sectigo_owner_email = param ? XSTRDUP((const char *)param) : NULL;
 
-param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_URL);
-params->sectigo_url = param ? XSTRDUP((const char *)param) : NULL;
+    param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_URL);
+    params->sectigo_url = param ? XSTRDUP((const char *)param) : NULL;
 
-param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_SENSITIVE);
-params->sectigo_sensitive = param ? *((bool *)param) : false;
+    param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_SENSITIVE);
+    params->sectigo_sensitive = param ? *((bool *)param) : false;
 
     return SECTIGO_CLIENT_SUCCESS;
 }
 
-
 CertifierError sectigo_client_request_certificate(CertifierPropMap * props, const unsigned char * csr,
 const char * node_address, const char * certifier_id, char ** out_cert)
-
 {
     Certifier *certifier = get_sectigo_certifier_instance();
     CertifierError rc = CERTIFIER_ERROR_INITIALIZER;
     JSON_Value *root_value = NULL;
     JSON_Object *root_obj = NULL;
     char *json_body = NULL;
+    
     if (out_cert == NULL)
     {
         rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
@@ -143,48 +143,45 @@ const char * node_address, const char * certifier_id, char ** out_cert)
     const char * source                          = property_get(props, CERTIFIER_OPT_SECTIGO_SOURCE);
     const char * certifier_url                   = property_get(props, CERTIFIER_OPT_SECTIGO_URL);
 
-if (!bearer_token) {
-    log_error("Missing CERTIFIER_OPT_SECTIGO_AUTH_TOKEN");
-    rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
-    rc.application_error_msg  = util_format_error_here("Bearer token is missing");
-    goto cleanup;
-}
-if (!certifier_url) {
-    log_error("Missing CERTIFIER_OPT_SECTIGO_URL");
-    rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
-    rc.application_error_msg  = util_format_error_here("Certifier URL is missing");
-    goto cleanup;
-}
-if (!source) {
-    log_error("Missing CERTIFIER_OPT_SECTIGO_SOURCE");
-    rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
-    rc.application_error_msg  = util_format_error_here("Source is missing");
-    goto cleanup;
-}
+    if (!bearer_token) {
+        log_error("Missing CERTIFIER_OPT_SECTIGO_AUTH_TOKEN");
+        rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+        rc.application_error_msg  = util_format_error_here("Bearer token is missing");
+        goto cleanup;
+    }
+    if (!certifier_url) {
+        log_error("Missing CERTIFIER_OPT_SECTIGO_URL");
+        rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+        rc.application_error_msg  = util_format_error_here("Certifier URL is missing");
+        goto cleanup;
+    }
+    if (!source) {
+        log_error("Missing CERTIFIER_OPT_SECTIGO_SOURCE");
+        rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+        rc.application_error_msg  = util_format_error_here("Source is missing");
+        goto cleanup;
+    }
 
     log_debug("Tracking ID is: %s\n", tracking_id);
     log_debug("Source ID is: %s\n", source);
 
-    
+    if (bearer_token != NULL) {
+    snprintf(auth_header, sizeof(auth_header), "Authorization: %s", bearer_token);
+    }
+    snprintf(tracking_header, sizeof(tracking_header), "x-xpki-request-id: %s", tracking_id);
+    snprintf(source_header, sizeof(source_header), "x-xpki-source: %s", source);
 
-
-if (bearer_token != NULL) {
-   snprintf(auth_header, sizeof(auth_header), "Authorization: %s", bearer_token);
-}
-snprintf(tracking_header, sizeof(tracking_header), "x-xpki-request-id: %s", tracking_id);
-snprintf(source_header, sizeof(source_header), "x-xpki-source: %s", source);
-
-const char *headers[] = {
-    "Accept: */*",
-    "Connection: keep-alive",
-    "cache-control: no-cache",
-    "Content-Type: application/json",
-    source_header,
-    tracking_header,
-    "x-xpki-partner-id: comcast",
-    auth_header,
-    NULL
-};
+    const char *headers[] = {
+        "Accept: */*",
+        "Connection: keep-alive",
+        "cache-control: no-cache",
+        "Content-Type: application/json",
+        source_header,
+        tracking_header,
+        "x-xpki-partner-id: comcast",
+        auth_header,
+        NULL
+    };
 
     if (util_is_empty(source))
     {
@@ -193,14 +190,14 @@ const char *headers[] = {
         goto cleanup;
     }
 
-    
-
     CertifierError csr_rc = sectigo_generate_certificate_signing_request(certifier, &serialized_string);
+    
     if (csr_rc.application_error_code != 0 || serialized_string == NULL) {
-    rc.application_error_code = csr_rc.application_error_code;
-    rc.application_error_msg = csr_rc.application_error_msg;
-    goto cleanup;
-}
+        rc.application_error_code = csr_rc.application_error_code;
+        rc.application_error_msg = csr_rc.application_error_msg;
+        goto cleanup;
+    }
+
     // Take Mutex
     if (pthread_mutex_lock(&lock) != 0)
     {
@@ -217,6 +214,7 @@ const char *headers[] = {
     }
     get_cert_sectigo_param_t params;
     xc_sectigo_get_default_cert_param(&params);
+
     // Build JSON body
     root_value = json_value_init_object();
     root_obj = json_value_get_object(root_value);
@@ -224,58 +222,57 @@ const char *headers[] = {
     json_object_set_string(root_obj, "certificateSigningRequest", serialized_string);
 
     json_object_set_string(root_obj, "commonName", params.sectigo_common_name ? params.sectigo_common_name : "");
-json_object_set_string(root_obj, "groupName", params.sectigo_group_name ? params.sectigo_group_name : "");
-json_object_set_string(root_obj, "groupEmailAddress", params.sectigo_group_email ? params.sectigo_group_email : "");
-json_object_set_string(root_obj, "id", params.sectigo_id ? params.sectigo_id : "");
-json_object_set_string(root_obj, "ownerFirstName", params.sectigo_owner_first_name ? params.sectigo_owner_first_name : "");
-json_object_set_string(root_obj, "ownerLastName", params.sectigo_owner_last_name ? params.sectigo_owner_last_name : "");
-json_object_set_string(root_obj, "employeeType", params.sectigo_employee_type ? params.sectigo_employee_type : "");
-json_object_set_string(root_obj, "serverPlatform", params.sectigo_server_platform ? params.sectigo_server_platform : "");
-json_object_set_string(root_obj, "projectName", params.sectigo_project_name ? params.sectigo_project_name : "");
-json_object_set_string(root_obj, "businessJustification", params.sectigo_business_justification ? params.sectigo_business_justification : "");
-json_object_set_string(root_obj, "certificateType", params.sectigo_cert_type ? params.sectigo_cert_type : "");
-json_object_set_string(root_obj, "ownerPhoneNumber", params.sectigo_owner_phone_number ? params.sectigo_owner_phone_number : "");
-json_object_set_string(root_obj, "ownerEmailAddress", params.sectigo_owner_email ? params.sectigo_owner_email : "");
-json_object_set_string(root_obj, "certifierUrl", params.sectigo_url ? params.sectigo_url : "");
-json_object_set_value(root_obj, "sensitive", json_value_init_boolean(params.sectigo_sensitive));
+    json_object_set_string(root_obj, "groupName", params.sectigo_group_name ? params.sectigo_group_name : "");
+    json_object_set_string(root_obj, "groupEmailAddress", params.sectigo_group_email ? params.sectigo_group_email : "");
+    json_object_set_string(root_obj, "id", params.sectigo_id ? params.sectigo_id : "");
+    json_object_set_string(root_obj, "ownerFirstName", params.sectigo_owner_first_name ? params.sectigo_owner_first_name : "");
+    json_object_set_string(root_obj, "ownerLastName", params.sectigo_owner_last_name ? params.sectigo_owner_last_name : "");
+    json_object_set_string(root_obj, "employeeType", params.sectigo_employee_type ? params.sectigo_employee_type : "");
+    json_object_set_string(root_obj, "serverPlatform", params.sectigo_server_platform ? params.sectigo_server_platform : "");
+    json_object_set_string(root_obj, "projectName", params.sectigo_project_name ? params.sectigo_project_name : "");
+    json_object_set_string(root_obj, "businessJustification", params.sectigo_business_justification ? params.sectigo_business_justification : "");
+    json_object_set_string(root_obj, "certificateType", params.sectigo_cert_type ? params.sectigo_cert_type : "");
+    json_object_set_string(root_obj, "ownerPhoneNumber", params.sectigo_owner_phone_number ? params.sectigo_owner_phone_number : "");
+    json_object_set_string(root_obj, "ownerEmailAddress", params.sectigo_owner_email ? params.sectigo_owner_email : "");
+    json_object_set_string(root_obj, "certifierUrl", params.sectigo_url ? params.sectigo_url : "");
+    json_object_set_value(root_obj, "sensitive", json_value_init_boolean(params.sectigo_sensitive));
     // Always set subjectAltNames and ipAddresses, even if empty
 
-// subjectAltNames as array
-JSON_Value *san_array = json_value_init_array();
-JSON_Array *san_json_array = json_value_get_array(san_array);
-if (params.sectigo_subject_alt_names && strlen(params.sectigo_subject_alt_names) > 0) {
-    char *san_copy = XSTRDUP(params.sectigo_subject_alt_names);
-    char *token = strtok(san_copy, ",");
-    while (token) {
-        json_array_append_value(san_json_array, json_value_init_string(token));
-        token = strtok(NULL, ",");
+    // subjectAltNames as array
+    JSON_Value *san_array = json_value_init_array();
+    JSON_Array *san_json_array = json_value_get_array(san_array);
+    if (params.sectigo_subject_alt_names && strlen(params.sectigo_subject_alt_names) > 0) {
+        char *san_copy = XSTRDUP(params.sectigo_subject_alt_names);
+        char *token = strtok(san_copy, ",");
+        while (token) {
+            json_array_append_value(san_json_array, json_value_init_string(token));
+            token = strtok(NULL, ",");
+        }
+        XFREE(san_copy);
     }
-    XFREE(san_copy);
-}
-json_object_set_value(root_obj, "subjectAltNames", san_array);
+    json_object_set_value(root_obj, "subjectAltNames", san_array);
 
-// ipAddresses as array
-JSON_Value *ip_array = json_value_init_array();
-JSON_Array *ip_json_array = json_value_get_array(ip_array);
-if (params.sectigo_ip_addresses && strlen(params.sectigo_ip_addresses) > 0) {
-    char *ip_copy = XSTRDUP(params.sectigo_ip_addresses);
-    char *token = strtok(ip_copy, ",");
-    while (token) {
-        json_array_append_value(ip_json_array, json_value_init_string(token));
-        token = strtok(NULL, ",");
+    // ipAddresses as array
+    JSON_Value *ip_array = json_value_init_array();
+    JSON_Array *ip_json_array = json_value_get_array(ip_array);
+    if (params.sectigo_ip_addresses && strlen(params.sectigo_ip_addresses) > 0) {
+        char *ip_copy = XSTRDUP(params.sectigo_ip_addresses);
+        char *token = strtok(ip_copy, ",");
+        while (token) {
+            json_array_append_value(ip_json_array, json_value_init_string(token));
+            token = strtok(NULL, ",");
+        }
+        XFREE(ip_copy);
     }
-    XFREE(ip_copy);
-}
-json_object_set_value(root_obj, "ipAddresses", ip_array);
+    
+    json_object_set_value(root_obj, "ipAddresses", ip_array);
     json_body = json_serialize_to_string(root_value);
-
 
     resp = http_post(props, certifier_url, headers, json_body);
     if (resp == NULL)
     {
         goto cleanup;
     }
-
 
     rc.application_error_code = resp->error;
 
@@ -292,7 +289,6 @@ json_object_set_value(root_obj, "ipAddresses", ip_array);
         log_error("ERROR: Failed to populate payload");
         goto cleanup;
     }
-
 
     parsed_json_root_value = json_parse_string_with_comments(resp->payload);
     if (json_value_get_type(parsed_json_root_value) != JSONObject)
@@ -313,22 +309,16 @@ json_object_set_value(root_obj, "ipAddresses", ip_array);
         goto cleanup;
     }
 
-
-
 cleanup:
-
     http_free_response(resp);
 
-    if (parsed_json_root_value)
-    {
-        json_value_free(parsed_json_root_value);
-    }
+    if (parsed_json_root_value) json_value_free(parsed_json_root_value);
 
     XFREE(serialized_string);
-    if (json_body)
-        json_free_serialized_string(json_body);
-    if (root_value)
-        json_value_free(root_value);
+
+    if (json_body) json_free_serialized_string(json_body);
+    if (root_value) json_value_free(root_value);
+    
     return rc;
 }
 
@@ -346,56 +336,59 @@ SECTIGO_CLIENT_ERROR_CODE xc_sectigo_get_cert(get_cert_sectigo_param_t * params)
     if (params->sectigo_group_name)
         json_object_set_string(root_obj, "groupName", params->sectigo_group_name);
     if (params->sectigo_group_email)
-    json_object_set_string(root_obj, "groupEmailAddress", params->sectigo_group_email);
-if (params->sectigo_id)
-    json_object_set_string(root_obj, "id", params->sectigo_id);
-if (params->sectigo_owner_first_name)
-    json_object_set_string(root_obj, "ownerFirstName", params->sectigo_owner_first_name);
-if (params->sectigo_owner_last_name)
-    json_object_set_string(root_obj, "ownerLastName", params->sectigo_owner_last_name);
-if (params->sectigo_employee_type)
-    json_object_set_string(root_obj, "employeeType", params->sectigo_employee_type);
-if (params->sectigo_server_platform)
-    json_object_set_string(root_obj, "serverPlatform", params->sectigo_server_platform);
-if (params->sectigo_project_name)
-    json_object_set_string(root_obj, "projectName", params->sectigo_project_name);
-if (params->sectigo_business_justification)
-    json_object_set_string(root_obj, "businessJustification", params->sectigo_business_justification);
-// subjectAltNames as array
-JSON_Value *san_array = json_value_init_array();
-JSON_Array *san_json_array = json_value_get_array(san_array);
-if (params->sectigo_subject_alt_names && strlen(params->sectigo_subject_alt_names) > 0) {
-    char *san_copy = XSTRDUP(params->sectigo_subject_alt_names);
-    char *token = strtok(san_copy, ",");
-    while (token) {
-        json_array_append_value(san_json_array, json_value_init_string(token));
-        token = strtok(NULL, ",");
+        json_object_set_string(root_obj, "groupEmailAddress", params->sectigo_group_email);
+    if (params->sectigo_id)
+        json_object_set_string(root_obj, "id", params->sectigo_id);
+    if (params->sectigo_owner_first_name)
+        json_object_set_string(root_obj, "ownerFirstName", params->sectigo_owner_first_name);
+    if (params->sectigo_owner_last_name)
+        json_object_set_string(root_obj, "ownerLastName", params->sectigo_owner_last_name);
+    if (params->sectigo_employee_type)
+        json_object_set_string(root_obj, "employeeType", params->sectigo_employee_type);
+    if (params->sectigo_server_platform)
+        json_object_set_string(root_obj, "serverPlatform", params->sectigo_server_platform);
+    if (params->sectigo_project_name)
+        json_object_set_string(root_obj, "projectName", params->sectigo_project_name);
+    if (params->sectigo_business_justification)
+        json_object_set_string(root_obj, "businessJustification", params->sectigo_business_justification);
+    
+    // subjectAltNames as array
+    JSON_Value *san_array = json_value_init_array();
+    JSON_Array *san_json_array = json_value_get_array(san_array);
+    if (params->sectigo_subject_alt_names && strlen(params->sectigo_subject_alt_names) > 0) {
+        char *san_copy = XSTRDUP(params->sectigo_subject_alt_names);
+        char *token = strtok(san_copy, ",");
+        while (token) {
+            json_array_append_value(san_json_array, json_value_init_string(token));
+            token = strtok(NULL, ",");
+        }
+        XFREE(san_copy);
     }
-    XFREE(san_copy);
-}
-json_object_set_value(root_obj, "subjectAltNames", san_array);
+    json_object_set_value(root_obj, "subjectAltNames", san_array);
 
-// ipAddresses as array
-JSON_Value *ip_array = json_value_init_array();
-JSON_Array *ip_json_array = json_value_get_array(ip_array);
-if (params->sectigo_ip_addresses && strlen(params->sectigo_ip_addresses) > 0) {
-    char *ip_copy = XSTRDUP(params->sectigo_ip_addresses);
-    char *token = strtok(ip_copy, ",");
-    while (token) {
-        json_array_append_value(ip_json_array, json_value_init_string(token));
-        token = strtok(NULL, ",");
+    // ipAddresses as array
+    JSON_Value *ip_array = json_value_init_array();
+    JSON_Array *ip_json_array = json_value_get_array(ip_array);
+    if (params->sectigo_ip_addresses && strlen(params->sectigo_ip_addresses) > 0) {
+        char *ip_copy = XSTRDUP(params->sectigo_ip_addresses);
+        char *token = strtok(ip_copy, ",");
+        while (token) {
+            json_array_append_value(ip_json_array, json_value_init_string(token));
+            token = strtok(NULL, ",");
+        }
+        XFREE(ip_copy);
     }
-    XFREE(ip_copy);
-}
-json_object_set_value(root_obj, "ipAddresses", ip_array);
-if (params->sectigo_cert_type)
-    json_object_set_string(root_obj, "certificateType", params->sectigo_cert_type);
-if (params->sectigo_owner_phone_number)
-    json_object_set_string(root_obj, "ownerPhoneNumber", params->sectigo_owner_phone_number);
-if (params->sectigo_owner_email)
-    json_object_set_string(root_obj, "ownerEmailAddress", params->sectigo_owner_email);
-if (params->sectigo_url)
-    json_object_set_string(root_obj, "certifierUrl", params->sectigo_url);
+    json_object_set_value(root_obj, "ipAddresses", ip_array);
+    
+    if (params->sectigo_cert_type)
+        json_object_set_string(root_obj, "certificateType", params->sectigo_cert_type);
+    if (params->sectigo_owner_phone_number)
+        json_object_set_string(root_obj, "ownerPhoneNumber", params->sectigo_owner_phone_number);
+    if (params->sectigo_owner_email)
+        json_object_set_string(root_obj, "ownerEmailAddress", params->sectigo_owner_email);
+    if (params->sectigo_url)
+        json_object_set_string(root_obj, "certifierUrl", params->sectigo_url);
+    
     // Generate CSR and add to body
     char *csr_pem = NULL;
     CertifierError csr_rc = sectigo_generate_certificate_signing_request(certifier, &csr_pem);
@@ -420,8 +413,6 @@ if (params->sectigo_url)
         NULL, // certifier_id
         &cert_output
     );
-
-    
 
     // Cleanup
     if (csr_pem) XFREE(csr_pem);

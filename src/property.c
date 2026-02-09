@@ -209,16 +209,10 @@ struct _PropMap
     char * id;
     char * owner_first_name;
     char * owner_last_name;
-    char * employee_type;
-    char * server_platform;
-    bool sensitive;
     char * project_name;
     char * business_justification;
     char * subject_alt_names;
-    char * ip_addresses;
-    char * owner_phone_number;
     char * owner_email;
-    char * cert_type;
     char * sectigo_url;
 };
 
@@ -389,15 +383,6 @@ int sectigo_property_set(CertifierPropMap * prop_map, int name, const void * val
         case CERTIFIER_OPT_SECTIGO_OWNER_LAST_NAME:
             prop_map->owner_last_name = XSTRDUP((const char *)value);
             break;
-        case CERTIFIER_OPT_SECTIGO_EMPLOYEE_TYPE:
-            prop_map->employee_type = XSTRDUP((const char *)value);
-            break;
-        case CERTIFIER_OPT_SECTIGO_SERVER_PLATFORM:
-            prop_map->server_platform = XSTRDUP((const char *)value);
-            break;
-        case CERTIFIER_OPT_SECTIGO_SENSITIVE:
-            prop_map->sensitive = (bool)(size_t)value;
-            break;
         case CERTIFIER_OPT_SECTIGO_PROJECT_NAME:
             prop_map->project_name = XSTRDUP((const char *)value);
             break;
@@ -407,20 +392,8 @@ int sectigo_property_set(CertifierPropMap * prop_map, int name, const void * val
         case CERTIFIER_OPT_SECTIGO_SUBJECT_ALT_NAMES:
             prop_map->subject_alt_names = XSTRDUP((const char *)value);
             break;
-        case CERTIFIER_OPT_SECTIGO_IP_ADDRESSES:
-            prop_map->ip_addresses = XSTRDUP((const char *)value);
-            break;
-        case CERTIFIER_OPT_SECTIGO_CERT_TYPE:
-            prop_map->cert_type = XSTRDUP((const char *)value);
-            break;
-        case CERTIFIER_OPT_SECTIGO_OWNER_PHONE_NUMBER:
-            prop_map->owner_phone_number = XSTRDUP((const char *)value);
-            break;
         case CERTIFIER_OPT_SECTIGO_OWNER_EMAIL:
             prop_map->owner_email = XSTRDUP((const char *)value);
-            break;
-        case CERTIFIER_OPT_SECTIGO_SOURCE:
-            prop_map->source = XSTRDUP((const char *)value);
             break;
         case CERTIFIER_OPT_SECTIGO_URL:
             prop_map->sectigo_url = XSTRDUP((const char *)value);
@@ -913,38 +886,17 @@ void * property_get(CertifierPropMap * prop_map, CERTIFIER_OPT name)
     case CERTIFIER_OPT_SECTIGO_OWNER_LAST_NAME:
         retval = (void *) prop_map->owner_last_name;
         break;
-    case CERTIFIER_OPT_SECTIGO_EMPLOYEE_TYPE:
-        retval = (void *) prop_map->employee_type;
-        break;
-    case CERTIFIER_OPT_SECTIGO_SERVER_PLATFORM:
-        retval = (void *) prop_map->server_platform;
-        break;
-    case CERTIFIER_OPT_SECTIGO_SENSITIVE:
-        retval = (void *)(size_t) prop_map->sensitive;
-        break;
     case CERTIFIER_OPT_SECTIGO_PROJECT_NAME:
         retval = (void *) prop_map->project_name;
         break;
-    case CERTIFIER_OPT_SECTIGO_BUSINESS_JUSTIFICATION:
+        case CERTIFIER_OPT_SECTIGO_BUSINESS_JUSTIFICATION:
         retval = (void *) prop_map->business_justification;
         break;
     case CERTIFIER_OPT_SECTIGO_SUBJECT_ALT_NAMES:
         retval = (void *) prop_map->subject_alt_names;
         break;
-    case CERTIFIER_OPT_SECTIGO_IP_ADDRESSES:
-        retval = (void *) prop_map->ip_addresses;
-        break;
-    case CERTIFIER_OPT_SECTIGO_OWNER_PHONE_NUMBER:
-        retval = (void *) prop_map->owner_phone_number;
-        break;
     case CERTIFIER_OPT_SECTIGO_OWNER_EMAIL:
         retval = (void *) prop_map->owner_email;
-        break;
-    case CERTIFIER_OPT_SECTIGO_CERT_TYPE:
-        retval = (void *) prop_map->cert_type;
-        break;
-    case CERTIFIER_OPT_SECTIGO_SOURCE:
-        retval = (void *) prop_map->source;
         break;
     case CERTIFIER_OPT_SECTIGO_URL:
         retval = (void *) prop_map->sectigo_url;
@@ -1400,16 +1352,6 @@ static int load_sectigo_fields_from_json(CertifierPropMap *propMap, JSON_Object 
             continue;
         }
 
-        // Special handling for boolean keys
-        if (strcmp(key, "libcertifier.sectigo.sensitive") == 0) {
-            int bool_value = json_object_get_boolean(root, key);
-            if (bool_value != -1) {  // -1 indicates not a boolean
-                log_info("Loaded sectigo sensitive: %s from config file.", bool_value ? "true" : "false");
-                propMap->sensitive = (bool)bool_value;
-            }
-            continue;
-        }
-
         // Special handling for array keys
         if (strcmp(key, "libcertifier.sectigo.subject.alt.names") == 0) {
             const char *array_str = json_object_get_string(root, key);
@@ -1424,21 +1366,6 @@ static int load_sectigo_fields_from_json(CertifierPropMap *propMap, JSON_Object 
                 log_info("Loaded sectigo subject alt names: %s from config file.", csv);
             }
             sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_SUBJECT_ALT_NAMES, csv);
-            XFREE(csv);
-            continue;
-        }
-        if (strcmp(key, "libcertifier.sectigo.ip.addresses") == 0) {
-            const char *array_str = json_object_get_string(root, key);
-            char *csv = NULL;
-            if (array_str) {
-                csv = simple_json_array_to_csv(array_str);
-            } else {
-                csv = XSTRDUP("");
-            }
-            if (strlen(csv) > 0) {
-                log_info("Loaded sectigo IP addresses: %s from config file.", csv);
-            }
-            sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_IP_ADDRESSES, csv);
             XFREE(csv);
             continue;
         }
@@ -1474,14 +1401,6 @@ static int load_sectigo_fields_from_json(CertifierPropMap *propMap, JSON_Object 
                 log_info("Loaded sectigo owner last name: %s from config file.", value_str);
                 sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_OWNER_LAST_NAME, value_str);
             }
-            else if (strcmp(key, "libcertifier.sectigo.employee.type") == 0) {
-                log_info("Loaded sectigo employee type: %s from config file.", value_str);
-                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_EMPLOYEE_TYPE, value_str);
-            }
-            else if (strcmp(key, "libcertifier.sectigo.server.platform") == 0) {
-                log_info("Loaded sectigo server platform: %s from config file.", value_str);
-                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_SERVER_PLATFORM, value_str);
-            }
             else if (strcmp(key, "libcertifier.sectigo.project.name") == 0) {
                 log_info("Loaded sectigo project name: %s from config file.", value_str);
                 sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_PROJECT_NAME, value_str);
@@ -1490,25 +1409,13 @@ static int load_sectigo_fields_from_json(CertifierPropMap *propMap, JSON_Object 
                 log_info("Loaded sectigo business justification: %s from config file.", value_str);
                 sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_BUSINESS_JUSTIFICATION, value_str);
             }
-            else if (strcmp(key, "libcertifier.sectigo.owner.phone.number") == 0) {
-                log_info("Loaded sectigo owner phone number: %s from config file.", value_str);
-                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_OWNER_PHONE_NUMBER, value_str);
-            }
             else if (strcmp(key, "libcertifier.sectigo.owner.email") == 0) {
                 log_info("Loaded sectigo owner email: %s from config file.", value_str);
                 sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_OWNER_EMAIL, value_str);
             }
-            else if (strcmp(key, "libcertifier.sectigo.cert.type") == 0) {
-                log_info("Loaded sectigo cert type: %s from config file.", value_str);
-                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_CERT_TYPE, value_str);
-            }
             else if (strcmp(key, "libcertifier.sectigo.url") == 0) {
                 log_info("Loaded sectigo URL: %s from config file.", value_str);
                 sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_URL, value_str);
-            }
-            else if (strcmp(key, "libcertifier.sectigo.source") == 0) {
-                log_info("Loaded sectigo source: %s from config file.", value_str);
-                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_SOURCE, value_str);
             }
             // Add more mappings as needed
         }
@@ -1686,16 +1593,10 @@ static void free_prop_map_values(CertifierPropMap * prop_map)
     FV(prop_map->id);
     FV(prop_map->owner_first_name);
     FV(prop_map->owner_last_name);
-    FV(prop_map->employee_type);
-    FV(prop_map->server_platform);
     FV(prop_map->project_name);
     FV(prop_map->business_justification);
     FV(prop_map->subject_alt_names);
-    FV(prop_map->ip_addresses);
-    FV(prop_map->owner_phone_number);
     FV(prop_map->owner_email);
-    FV(prop_map->cert_type);
-    FV(prop_map->source);
     FV(prop_map->sectigo_url);
 }
 

@@ -219,13 +219,9 @@ SECTIGO_CLIENT_ERROR_CODE sectigo_print_helper(SECTIGO_MODE mode)
 #define SECTIGO_GET_CERT_LONG_OPTIONS                                                                                              \
     { "common-name", required_argument, NULL, 'C' },                                                          \
     { "id", required_argument, NULL, 'I' }, \
-    { "employee-type", required_argument, NULL, 'e' }, \
-    { "server-platform", required_argument, NULL, 's' }, \
-    { "sensitive", no_argument, NULL, 'N' }, \
     { "project-name", required_argument, NULL, 'r' }, \
     { "business-justification", required_argument, NULL, 'b' }, \
     { "subject-alt-names", required_argument, NULL, 'A' }, \
-    { "ip-addresses", required_argument, NULL, 'x' }, \
     {"url", required_argument, NULL, 'u'}, \
     { "auth-token", required_argument, NULL, 'K' }, \
     { "group-name", required_argument, NULL, 'G' }, \
@@ -233,11 +229,7 @@ SECTIGO_CLIENT_ERROR_CODE sectigo_print_helper(SECTIGO_MODE mode)
     { "owner-first-name", required_argument, NULL, 'O' }, \
     { "owner-last-name", required_argument, NULL, 'J' }, \
     { "owner-email", required_argument, NULL, 'Z' }, \
-    { "owner-phone-number", required_argument, NULL, 'U' }, \
-    { "cert-type", required_argument, NULL, 'T' }, \
     { "config", required_argument, NULL, 'l' }, \
-    { "tracking-id", required_argument, NULL, 'W' }, \
-    {"source", required_argument, NULL, 'Y'}  \
     { NULL, 0, NULL, 0 }                                                                                       \
     //make default arg '*' for san and ip 
     //only take in choices=['fte', 'contractor', 'associate']
@@ -277,24 +269,17 @@ static const char * get_sectigo_command_opt_helper(SECTIGO_MODE mode)
 #define SECTIGO_GET_CERT_HELPER                     \
     "--common-name [value] (-C)\n"                  \
     "--id [value] (-I)\n"                           \
-    "--employee-type [value] (-e)\n"                \
-    "--server-platform [value] (-s)\n"              \
-    "--sensitive (-N)\n"                            \
     "--project-name [value] (-r)\n"                 \
     "--business-justification [value] (-b)\n"       \
     "--subject-alt-names [value] (-A)\n"            \
-    "--ip-addresses [value] (-x)\n"                 \
     "--group-name [value] (-G)\n"                   \
     "--group-email [value] (-E)\n"                  \
     "--owner-first-name [value] (-O)\n"             \
     "--owner-last-name [value] (-J)\n"              \
     "--owner-email [value] (-Z)\n"                  \
-    "--owner-phone-number [value] (-U)\n"           \
-    "--cert-type [value] (-T)\n"                    \
     "--auth-token [value] (-K)\n"                   \
     "--url [value] (-u)\n"                          \
     "--config [value] (-l)\n"                       \
-    "--source [value] (-Y)\n"
 
     switch (mode)
     {
@@ -592,13 +577,9 @@ static const char * const sectigo_get_cert_short_options = "C:I:e:s:N:r:b:A:x:K:
 static const struct option sectigo_get_cert_long_opts[] = {
     { "common-name", required_argument, NULL, 'C' },
     { "id", required_argument, NULL, 'I' },
-    { "employee-type", required_argument, NULL, 'e' },
-    { "server-platform", required_argument, NULL, 's' },
-    { "sensitive", no_argument, NULL, 'N' },
     { "project-name", required_argument, NULL, 'r' },
     { "business-justification", required_argument, NULL, 'b' },
     { "subject-alt-names", required_argument, NULL, 'A' },
-    { "ip-addresses", required_argument, NULL, 'x' },
     { "url", required_argument, NULL, 'u'},
     { "auth-token", required_argument, NULL, 'K' },
     { "group-name", required_argument, NULL, 'G' },
@@ -606,11 +587,7 @@ static const struct option sectigo_get_cert_long_opts[] = {
     { "owner-first-name", required_argument, NULL, 'O' },
     { "owner-last-name", required_argument, NULL, 'J' },
     { "owner-email", required_argument, NULL, 'Z' },
-    { "owner-phone-number", required_argument, NULL, 'U' },
-    { "cert-type", required_argument, NULL, 'T' },
     { "config", required_argument, NULL, 'l' },
-    { "tracking-id", required_argument, NULL, 'W' },
-    { "source", required_argument, NULL, 'Y'},
     { "help", no_argument, NULL, 'h' },
     { NULL, 0, NULL, 0 }
     //make default arg '*' for san and ip 
@@ -657,22 +634,6 @@ SECTIGO_CLIENT_ERROR_CODE sectigo_process(SECTIGO_MODE mode, sectigo_parameter_t
             sectigo_parameter->get_cert_param.id = optarg;
             certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_ID, optarg);
             break;
-        case 'e':
-            sectigo_parameter->get_cert_param.employee_type = optarg;
-            certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_EMPLOYEE_TYPE, optarg);
-            break;
-        case 's':
-            sectigo_parameter->get_cert_param.server_platform = optarg;
-            certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_SERVER_PLATFORM, optarg);
-            break;
-        case 'N':
-            sectigo_parameter->get_cert_param.sensitive = true;
-            certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_SENSITIVE, optarg);
-            break;
-        case 'r':
-            sectigo_parameter->get_cert_param.project_name = optarg;
-            certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_PROJECT_NAME, optarg);
-            break;
         case 'b':
             sectigo_parameter->get_cert_param.business_justification = optarg;
             certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_BUSINESS_JUSTIFICATION, optarg);
@@ -680,10 +641,6 @@ SECTIGO_CLIENT_ERROR_CODE sectigo_process(SECTIGO_MODE mode, sectigo_parameter_t
         case 'A':
             sectigo_parameter->get_cert_param.subject_alt_names = optarg;
             certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_SUBJECT_ALT_NAMES, optarg);
-            break;
-        case 'x':
-            sectigo_parameter->get_cert_param.ip_addresses = optarg;
-            certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_IP_ADDRESSES, optarg);
             break;
         case 'l':
             // config file path, handled in sectigo_perform
@@ -708,14 +665,6 @@ SECTIGO_CLIENT_ERROR_CODE sectigo_process(SECTIGO_MODE mode, sectigo_parameter_t
             sectigo_parameter->get_cert_param.owner_email = optarg;
             certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_OWNER_EMAIL, optarg);
             break;
-        case 'U':
-            sectigo_parameter->get_cert_param.owner_phone_number = optarg;
-            certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_OWNER_PHONE_NUMBER, optarg);
-            break;
-        case 'T':
-            sectigo_parameter->get_cert_param.cert_type = optarg;
-            certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_CERT_TYPE, optarg);
-            break;
         case 'K':
             sectigo_parameter->get_cert_param.auth_token = optarg;
             certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_AUTH_TOKEN, optarg);
@@ -723,10 +672,6 @@ SECTIGO_CLIENT_ERROR_CODE sectigo_process(SECTIGO_MODE mode, sectigo_parameter_t
         case 'u':
             sectigo_parameter->get_cert_param.sectigo_url = optarg;
             certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_URL, optarg);
-            break;
-        case 'Y':
-            sectigo_parameter->get_cert_param.source = optarg;
-            certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_SOURCE, optarg);
             break;
         case '?':
                 log_info("Invalid or missing Sectigo option");

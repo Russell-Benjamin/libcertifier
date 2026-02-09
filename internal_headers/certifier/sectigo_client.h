@@ -45,18 +45,11 @@ const char * group_email;
 const char * id;
 const char * owner_first_name;
 const char * owner_last_name;
-const char * employee_type;
-const char * server_platform;
-bool sensitive;
 const char * project_name;
 const char * business_justification;
 const char * subject_alt_names;
-const char * ip_addresses;
-const char * owner_phone_number;
 const char * owner_email;
-const char * cert_type;
 const char * sectigo_url;
-const char * source;
 
 
 } sectigo_get_cert_param_t;

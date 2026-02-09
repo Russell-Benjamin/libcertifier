@@ -113,8 +113,8 @@ Same command with SAT authentication:
 The certificate can be downloaded through the certificate ID returned as a result of running the command.
 
 ----
-./certifierUtil sectigo-get-cert -C <common-name> -I <ID> -e [fte/associate/contractor] -s <server-platform> -N <sensitive> -r <project-name> -b <business-justification> -A <subject-alt-names> -x <ip-addresses> -G <group-name> -E <group-email> -O <owner-fname> -J <owner-lname> 
--Z <owner-email> -U <owner-phonenum> -T <cert-type> -K <auth-token> -u <url> -l <config> -W <tracking-id> -Y <source>
+./certifierUtil sectigo-get-cert -C <common-name> -I <ID> -r <project-name> -b <business-justification> -A <subject-alt-names> -G <group-name> -E <group-email> -O <owner-first-name> -J <owner-last-name> 
+-Z <owner-email> -K <auth-token> -u <url> -l <config>
 ----
 
 == *certifierUtil commands*
@@ -535,24 +535,6 @@ Disabled by default - Only error messages are shown.
 -I <value>
 | User or device ID
 
-| employee-type
-| e
-| --employee-type <value> +
--e <value>
-| Employee type
-
-| server-platform
-| s
-| --server-platform <value> +
--s <value>
-| Server platform
-
-| sensitive
-| N
-| --sensitive +
--N
-| Mark as sensitive
-
 | project-name
 | r
 | --project-name <value> +
@@ -571,12 +553,6 @@ Disabled by default - Only error messages are shown.
 -A <value>
 | Subject alternative names (CSV)
 
-| ip-addresses
-| x
-| --ip-addresses <value> +
--x <value>
-| IP addresses (CSV)
-
 | group-name
 | G
 | --group-name <value> +
@@ -589,13 +565,13 @@ Disabled by default - Only error messages are shown.
 -E <value>
 | Group email
 
-| owner-fname
+| owner-first-name
 | O
-| --owner-fname <value> +
+| --owner-first-name <value> +
 -O <value>
 | Owner first name
 
-| owner-lname
+| owner-last-name
 | J
 | --owner-lname <value> +
 -J <value>
@@ -606,12 +582,6 @@ Disabled by default - Only error messages are shown.
 | --owner-email <value> +
 -Z <value>
 | Owner email
-
-| owner-phonenum
-| U
-| --owner-phonenum <value> +
--U <value>
-| Owner phone number
 
 | cert-type
 | T
@@ -785,24 +755,6 @@ Note: value type = `bool`
 | "Last"
 | Owner's last name
 
-| libcertifier.sectigo.employee.type
-| "associate"
-| Employee type (e.g., associate, employee, contractor)
-
-| libcertifier.sectigo.server.platform
-| "Other"
-| Server platform name. +
-Note: Use any of the following options: Tomcat, Redhat Linux, Microsoft IIS 5.x and later, Apache/MODSSL, IBM HTTP server, Java Web Server (Javasoft/SUN), Oracle, SAP Web Application Server, Citrix, Other
-
-| libcertifier.sectigo.sensitive
-| false
-| Mark certificate as sensitive. +
-Note: value type = `bool`
-
-| libcertifier.sectigo.project.name
-| "ExampleProject"
-| Project name
-
 | libcertifier.sectigo.business.justification
 | "Testing"
 | Business justification for the request
@@ -812,20 +764,6 @@ Note: value type = `bool`
 | Subject alternative names. +
 Note: value type = `array of strings`  Pass empty array if you don't have.
 
-| libcertifier.sectigo.ip.addresses
-| []
-| IP addresses. +
-Note: value type = `array of strings`  Pass empty array if you don't have.
-
-| libcertifier.sectigo.cert.type
-| "comodo"
-| Certificate type. +
-Note: Always pass comodo for internet-facing apps
-
-| libcertifier.sectigo.owner.phone.number
-| "1234567890"
-| Owner's phone number
-
 | libcertifier.sectigo.owner.email
 | "owner@example.com"
 | Owner's email address
@@ -833,9 +771,5 @@ Note: Always pass comodo for internet-facing apps
 | libcertifier.sectigo.tracking.id
 | "1234"
 | Tracking ID for the request
-
-| libcertifier.sectigo.source
-| "libcertifier"
-| Source identifier for the request
 
 |===

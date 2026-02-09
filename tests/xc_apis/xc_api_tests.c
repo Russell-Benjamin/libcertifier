@@ -250,18 +250,11 @@ static void test_get_sectigo_cert()
     params.id                   = "exid";
     params.owner_first_name     = "First";
     params.owner_last_name      = "Last";
-    params.employee_type        = "associate";
-    params.server_platform      = "other";
-    params.sensitive            = "false";
     params.project_name         = "Testing create with SAT";
     params.business_justification = "Testing create with SAT";
     params.subject_alt_names    = "*";
-    params.ip_addresses         = "*";
-    params.cert_type            = "comodo";
-    params.owner_phone_number   = "2670000000";
     params.owner_email          = "first_last@comcast.com";
-    params.sectigo_url                  = "https://certs-dev.xpki.io/api/createCertificate";
-    params.source               = "libcertifier";
+    params.sectigo_url          = "https://certs-dev.xpki.io/api/createCertificate";
 
     // Call the API
     error = xc_sectigo_get_cert(&params);

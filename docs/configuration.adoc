@@ -39,17 +39,10 @@ xref:libcertifier.adoc[*Back to Manual*]
 | libcertifier.sectigo.id   | user123 |
 | libcertifier.sectigo.owner.first.name   | First |
 | libcertifier.sectigo.owner.last.name   | Last |
-| libcertifier.sectigo.employee.type | associate |
-| libcertifier.sectigo.server.platform   | Other |
-| libcertifier.sectigo.sensitive   | false |
 | libcertifier.sectigo.project.name   | ExampleProject |
 | libcertifier.sectigo.business.justification   | Testing |
 | libcertifier.sectigo.subject.alt.names   | [] |
-| libcertifier.sectigo.ip.addresses   | [] |
-| libcertifier.sectigo.cert.type   | comodo |
-| libcertifier.sectigo.owner.phone.number   | 1234567890 |
 | libcertifier.sectigo.owner.email   | owner@example.com |
-| libcertifier.sectigo.source   | libcertifier |
 |=======
 
 == Extended Key Usage values:

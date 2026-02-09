@@ -33,15 +33,8 @@
   "libcertifier.sectigo.id": "",
   "libcertifier.sectigo.owner.first.name": "",
   "libcertifier.sectigo.owner.last.name": "",
-  "libcertifier.sectigo.employee.type": "",
-  "libcertifier.sectigo.server.platform": "",
-  "libcertifier.sectigo.sensitive": false,
   "libcertifier.sectigo.project.name": "",
   "libcertifier.sectigo.business.justification": "",
   "libcertifier.sectigo.subject.alt.names": [],
-  "libcertifier.sectigo.ip.addresses": [],
-  "libcertifier.sectigo.owner.phone.number": "",
-  "libcertifier.sectigo.owner.email": "",
-  "libcertifier.sectigo.source": ""
-
+  "libcertifier.sectigo.owner.email": ""
 }

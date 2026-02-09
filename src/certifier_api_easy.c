@@ -95,13 +95,9 @@
 #define SECTIGO_GET_CERT_LONG_OPTIONS                                                                                              \
     { "common-name", required_argument, NULL, 'C' }, \
     { "id", required_argument, NULL, 'I' }, \
-    { "employee-type", required_argument, NULL, 'e' }, \
-    { "server-platform", required_argument, NULL, 's' }, \
-    { "sensitive", no_argument, NULL, 'N' }, \
     { "project-name", required_argument, NULL, 'r' }, \
     { "business-justification", required_argument, NULL, 'b' }, \
     { "subject-alt-names", required_argument, NULL, 'A' }, \
-    { "ip-addresses", required_argument, NULL, 'x' }, \
     {"url", required_argument, NULL, 'u'}, \
     { "auth-token", required_argument, NULL, 'K' }, \
     { "group-name", required_argument, NULL, 'G' }, \
@@ -109,10 +105,7 @@
     { "owner-first-name", required_argument, NULL, 'O' }, \
     { "owner-last-name", required_argument, NULL, 'J' }, \
     { "owner-email", required_argument, NULL, 'Z' }, \
-    { "owner-phone-number", required_argument, NULL, 'U' }, \
-    { "cert-type", required_argument, NULL, 'T' }, \
     { "config", required_argument, NULL, 'l' }, \
-    { "tracking-id", required_argument, NULL, 'W' }, \
     { NULL, 0, NULL, 0 }
     //make default arg '*' for san and ip 
     //only take in choices=['fte', 'contractor', 'associate']
@@ -775,16 +768,13 @@ static int do_sectigo_get_cert(CERTIFIER * easy)
 
     // Check for required Sectigo properties
     const char *common_name = certifier_get_property(easy->certifier, CERTIFIER_OPT_SECTIGO_COMMON_NAME);
-    const char *employee_type = certifier_get_property(easy->certifier, CERTIFIER_OPT_SECTIGO_EMPLOYEE_TYPE);
-    const char *server_platform = certifier_get_property(easy->certifier, CERTIFIER_OPT_SECTIGO_SERVER_PLATFORM);
     const char *project_name = certifier_get_property(easy->certifier, CERTIFIER_OPT_SECTIGO_PROJECT_NAME);
     const char *business_justification = certifier_get_property(easy->certifier, CERTIFIER_OPT_SECTIGO_BUSINESS_JUSTIFICATION);
 
-    if (util_is_empty(common_name) || util_is_empty(employee_type) ||
-        util_is_empty(server_platform) || util_is_empty(project_name) ||
-        util_is_empty(business_justification)) {
+    if (util_is_empty(common_name) || util_is_empty(business_justification) || util_is_empty(project_name)) {
+
         finish_operation(easy, CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1,
-            "Missing required Sectigo flags (common-name, employee-type, server-platform, project-name, business-justification)");
+            "Missing required Sectigo flags (common-name, project-name, business-justification)");
         return CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
     }
 
@@ -1164,26 +1154,6 @@ static int process_command_line(CERTIFIER * easy)
                 return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_ID, optarg);
             }
             break;
-        case 'e': // employee-type
-            if (optarg) {
-                // Validate allowed values: "fte", "contractor", "associate"
-                if (strcmp(optarg, "fte") && strcmp(optarg, "contractor") && strcmp(optarg, "associate")) {
-                    log_error("Invalid employee-type: %s. Allowed: fte, contractor, associate.", optarg);
-                    return_code = 1;
-                    break;
-                }
-            
-                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_EMPLOYEE_TYPE, optarg);
-            }
-            break;
-        case 's': // server-platform
-            if (optarg) {
-                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_SERVER_PLATFORM, optarg);
-            }
-            break;
-        case 'N': // sensitive
-            return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_SENSITIVE, (void *)true);
-            break;
         case 'r': // project-name
             if (optarg) {
                 return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_PROJECT_NAME, optarg);
@@ -1197,11 +1167,6 @@ static int process_command_line(CERTIFIER * easy)
         case 'A': // subject-alt-names
             if (optarg) {
                 return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_SUBJECT_ALT_NAMES, optarg);
-            }
-            break;
-        case 'x': // ip-addresses
-            if (optarg) {
-                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_IP_ADDRESSES, optarg);
             }
             break;
         case 'K': // auth-token
@@ -1238,20 +1203,6 @@ static int process_command_line(CERTIFIER * easy)
                 return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_OWNER_EMAIL, optarg);
             }
             break;
-        case 'Z': // owner-phone-number
-            if (optarg) {
-                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_OWNER_PHONE_NUMBER, optarg);
-            }
-            break;
-        case 'U': // cert-type
-            if (optarg) {
-                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_CERT_TYPE, optarg);
-            }
-            break;
-        case 'Y': //source
-            if (optarg){
-                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_SOURCE, optarg);
-            }
         case '?':
             /* Case when user enters the command as
              * $ ./libCertifier -p

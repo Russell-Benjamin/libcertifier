@@ -1420,7 +1420,9 @@ static int load_sectigo_fields_from_json(CertifierPropMap *propMap, JSON_Object 
             if (!csv) {
                 csv = XSTRDUP(""); // Always set to empty string if missing/empty
             }
-            log_info("Loaded sectigo subject alt names: %s from config file.", csv);
+            if (strlen(csv) > 0) {
+                log_info("Loaded sectigo subject alt names: %s from config file.", csv);
+            }
             sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_SUBJECT_ALT_NAMES, csv);
             XFREE(csv);
             continue;
@@ -1433,7 +1435,9 @@ static int load_sectigo_fields_from_json(CertifierPropMap *propMap, JSON_Object 
             } else {
                 csv = XSTRDUP("");
             }
-            log_info("Loaded sectigo IP addresses: %s from config file.", csv);
+            if (strlen(csv) > 0) {
+                log_info("Loaded sectigo IP addresses: %s from config file.", csv);
+            }
             sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_IP_ADDRESSES, csv);
             XFREE(csv);
             continue;

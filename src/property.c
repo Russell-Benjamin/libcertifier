@@ -36,6 +36,27 @@
 #define DEFAULT_OUTPUT_P12_PATH "output.p12"
 #define DEFAULT_CFG_FILENAME "libcertifier.cfg"
 #define DEFAULT_USER_CFG_FILENAME "/usr/local/etc/certifier/libcertifier.cfg"
+
+// Helper function to validate Sectigo key type
+int is_valid_sectigo_key_type(const char *key_type)
+{
+    if (!key_type) {
+        return 0;
+    }
+    
+    const char *valid_key_types[] = {
+        "RSA-2048", "RSA-3072", "RSA-4096", "RSA-8192",
+        "ECC-PRIME256V1", "ECC-SECP384R1"
+    };
+    
+    for (int i = 0; i < sizeof(valid_key_types) / sizeof(valid_key_types[0]); i++) {
+        if (strcmp(key_type, valid_key_types[i]) == 0) {
+            return 1;
+        }
+    }
+    
+    return 0;
+}
 #define DEFAULT_GLOBAL_CFG_FILENAME "/etc/certifier/libcertifier.cfg"
 #define DEFAULT_AUTH_TYPE "X509"
 #define DEFAULT_CA_INFO "libcertifier-cert.crt"
@@ -202,7 +223,7 @@ struct _PropMap
     char * mtls_filename;
     char * mtls_p12_filename;
     
-    //Sectigo properties (common properties like auth_token, source, etc. are above)
+    //Sectigo properties (common properties like auth_token, validity days, source, etc. are above)
     char * common_name;
     char * group_name;
     char * group_email;
@@ -214,6 +235,8 @@ struct _PropMap
     char * subject_alt_names;
     char * owner_email;
     char * sectigo_url;
+    char * devhub_id;
+    char * key_type;
 };
 
 static void free_prop_map_values(CertifierPropMap * prop_map);
@@ -397,6 +420,15 @@ int sectigo_property_set(CertifierPropMap * prop_map, int name, const void * val
             break;
         case CERTIFIER_OPT_SECTIGO_URL:
             prop_map->sectigo_url = XSTRDUP((const char *)value);
+            break;
+        case CERTIFIER_OPT_SECTIGO_DEVHUB_ID:
+            prop_map->devhub_id = XSTRDUP((const char *)value);
+            break;
+        case CERTIFIER_OPT_SECTIGO_VALIDITY_DAYS:
+            prop_map->validity_days = (int)(size_t)value;
+            break;
+        case CERTIFIER_OPT_SECTIGO_KEY_TYPE:
+            prop_map->key_type = XSTRDUP((const char *)value);
             break;
         default:
             log_warn("sectigo_property_set: unrecognized property [%d]", name);
@@ -901,7 +933,15 @@ void * property_get(CertifierPropMap * prop_map, CERTIFIER_OPT name)
     case CERTIFIER_OPT_SECTIGO_URL:
         retval = (void *) prop_map->sectigo_url;
         break;
-
+    case CERTIFIER_OPT_SECTIGO_DEVHUB_ID:
+        retval = (void *) prop_map->devhub_id;
+        break;
+    case CERTIFIER_OPT_SECTIGO_VALIDITY_DAYS:
+        retval = (void *) (size_t) prop_map->validity_days;
+        break;
+    case CERTIFIER_OPT_SECTIGO_KEY_TYPE:
+        retval = (void *) prop_map->key_type;
+        break;
     default:
         log_warn("property_get: unrecognized property [%d]", name);
         retval = NULL;
@@ -1370,6 +1410,12 @@ static int load_sectigo_fields_from_json(CertifierPropMap *propMap, JSON_Object 
             continue;
         }
 
+        if (strcmp(key, "libcertifier.sectigo.validity.days") == 0) {
+            int validity_days = json_object_get_number(root, key);
+            log_info("Loaded sectigo validity days: %d from config file.", validity_days);
+            sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_VALIDITY_DAYS, (void *) (size_t) validity_days);
+        }
+
         const char *value_str = json_object_get_string(root, key);
         if (value_str && strlen(value_str) > 0) {  // Only process non-empty values
             // Map config key to property enum
@@ -1416,6 +1462,18 @@ static int load_sectigo_fields_from_json(CertifierPropMap *propMap, JSON_Object 
             else if (strcmp(key, "libcertifier.sectigo.url") == 0) {
                 log_info("Loaded sectigo URL: %s from config file.", value_str);
                 sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_URL, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.devhub.id") == 0) {
+                log_info("Loaded sectigo devhub id: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_DEVHUB_ID, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.key.type") == 0) {
+                if (!is_valid_sectigo_key_type(value_str)) {
+                    log_error("Invalid key type '%s' in config file. Supported: [RSA-2048, RSA-3072, RSA-4096, RSA-8192, ECC-PRIME256V1, ECC-SECP384R1]", value_str);
+                    exit(0);
+                }
+                log_info("Loaded sectigo key type: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_KEY_TYPE, value_str);
             }
             // Add more mappings as needed
         }
@@ -1598,6 +1656,8 @@ static void free_prop_map_values(CertifierPropMap * prop_map)
     FV(prop_map->subject_alt_names);
     FV(prop_map->owner_email);
     FV(prop_map->sectigo_url);
+    FV(prop_map->devhub_id);
+    FV(prop_map->key_type);
 }
 
 CertifierPropMap * property_new_sectigo(void)

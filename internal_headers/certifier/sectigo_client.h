@@ -38,20 +38,21 @@ extern "C" {
 
 #define IMPULSE_URL "https://certs-dev.xpki.io/"
 typedef struct{
-const char * auth_token;
-const char * common_name;
-const char * group_name;
-const char * group_email;
-const char * id;
-const char * owner_first_name;
-const char * owner_last_name;
-const char * project_name;
-const char * business_justification;
-const char * subject_alt_names;
-const char * owner_email;
-const char * sectigo_url;
-
-
+    const char * auth_token;
+    const char * common_name;
+    const char * group_name;
+    const char * group_email;
+    const char * id;
+    const char * owner_first_name;
+    const char * owner_last_name;
+    const char * project_name;
+    const char * business_justification;
+    const char * subject_alt_names;
+    const char * owner_email;
+    const char * sectigo_url;
+    const char * devhub_id;
+    size_t validity_days;
+    const char * key_type;
 } sectigo_get_cert_param_t;
 
 

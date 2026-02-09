@@ -94,6 +94,13 @@ const char * get_default_ca_path();
 
 const char * get_default_ca_info();
 
+/**
+ * Validate if a key type string is a supported Sectigo key type.
+ * @param key_type The key type string to validate
+ * @return 1 if valid, 0 otherwise
+ */
+int is_valid_sectigo_key_type(const char * key_type);
+
 #ifdef __cplusplus
 }
 #endif

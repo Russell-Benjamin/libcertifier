@@ -277,6 +277,9 @@ static const char * get_sectigo_command_opt_helper(SECTIGO_MODE mode)
     "--owner-first-name [value] (-O)\n"             \
     "--owner-last-name [value] (-J)\n"              \
     "--owner-email [value] (-Z)\n"                  \
+    "--devhub-id [value] (-D)\n"                    \
+    "--validity-days [value] (-V)\n"                \
+    "--key-type [value] (-W)\n"                     \
     "--auth-token [value] (-K)\n"                   \
     "--url [value] (-u)\n"                          \
     "--config [value] (-l)\n"                       \
@@ -573,7 +576,7 @@ XPKI_CLIENT_ERROR_CODE process(XPKI_MODE mode, xc_parameter_t * xc_parameter, in
 }
 
 // --- Sectigo Option Table ---
-static const char * const sectigo_get_cert_short_options = "C:I:e:s:N:r:b:A:x:K:u:G:E:O:J:Z:U:T:l:W:Y:h";
+static const char * const sectigo_get_cert_short_options = "C:I:e:s:N:r:b:A:x:K:u:G:E:O:J:Z:U:T:l:W:V:D:h";
 static const struct option sectigo_get_cert_long_opts[] = {
     { "common-name", required_argument, NULL, 'C' },
     { "id", required_argument, NULL, 'I' },
@@ -587,6 +590,9 @@ static const struct option sectigo_get_cert_long_opts[] = {
     { "owner-first-name", required_argument, NULL, 'O' },
     { "owner-last-name", required_argument, NULL, 'J' },
     { "owner-email", required_argument, NULL, 'Z' },
+    { "devhub-id", required_argument, NULL, 'D' },
+    { "validity-days", required_argument, NULL, 'V' },
+    { "key-type", required_argument, NULL, 'W' },
     { "config", required_argument, NULL, 'l' },
     { "help", no_argument, NULL, 'h' },
     { NULL, 0, NULL, 0 }
@@ -672,6 +678,18 @@ SECTIGO_CLIENT_ERROR_CODE sectigo_process(SECTIGO_MODE mode, sectigo_parameter_t
         case 'u':
             sectigo_parameter->get_cert_param.sectigo_url = optarg;
             certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_URL, optarg);
+            break;
+        case 'D':
+            sectigo_parameter->get_cert_param.devhub_id = optarg;
+            certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_DEVHUB_ID, optarg);
+            break;
+        case 'V':
+            sectigo_parameter->get_cert_param.validity_days = atol(optarg);
+            certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_VALIDITY_DAYS, optarg);
+            break;
+        case 'W':
+            sectigo_parameter->get_cert_param.key_type = optarg;
+            certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_KEY_TYPE, optarg);
             break;
         case '?':
                 log_info("Invalid or missing Sectigo option");

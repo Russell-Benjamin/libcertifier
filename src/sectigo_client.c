@@ -97,6 +97,15 @@ SECTIGO_CLIENT_ERROR_CODE xc_sectigo_get_default_cert_param(sectigo_get_cert_par
     param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_URL);
     params->sectigo_url = param ? XSTRDUP((const char *)param) : NULL;
 
+    param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_DEVHUB_ID);
+    params->devhub_id = param ? XSTRDUP((const char *)param) : NULL;
+
+    param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_VALIDITY_DAYS);
+    params->validity_days = param ? (size_t) param : 365;
+
+    param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_KEY_TYPE);
+    params->key_type = param ? XSTRDUP((const char *)param) : NULL;
+
     return SECTIGO_CLIENT_SUCCESS;
 }
 
@@ -211,7 +220,16 @@ const char * node_address, const char * certifier_id, char ** out_cert)
     json_object_set_string(root_obj, "businessJustification", params.business_justification ? params.business_justification : "");
     json_object_set_string(root_obj, "certificateType", "comodo");  // Always "comodo"
     json_object_set_string(root_obj, "ownerEmailAddress", params.owner_email ? params.owner_email : "");
-    // Always set subjectAltNames and ipAddresses, even if empty
+    json_object_set_string(root_obj, "devhubId", params.devhub_id ? params.devhub_id : "");
+    
+    // Convert validity_days to string
+    if (params.validity_days > 0) {
+        char validity_days_str[16];
+        snprintf(validity_days_str, sizeof(validity_days_str), "%zu", params.validity_days);
+        json_object_set_string(root_obj, "validityDays", validity_days_str);
+    }
+    
+    json_object_set_string(root_obj, "keyType", params.key_type ? params.key_type : "");
 
     // subjectAltNames as array
     JSON_Value *san_array = json_value_init_array();

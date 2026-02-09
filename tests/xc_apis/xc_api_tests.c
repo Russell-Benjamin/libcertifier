@@ -255,6 +255,9 @@ static void test_get_sectigo_cert()
     params.subject_alt_names    = "*";
     params.owner_email          = "first_last@comcast.com";
     params.sectigo_url          = "https://certs-dev.xpki.io/api/createCertificate";
+    params.devhub_id            = "12345";
+    params.validity_days        = 90;
+    params.key_type             = "RSA-8192";
 
     // Call the API
     error = xc_sectigo_get_cert(&params);

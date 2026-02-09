@@ -33,8 +33,11 @@
   "libcertifier.sectigo.id": "",
   "libcertifier.sectigo.owner.first.name": "",
   "libcertifier.sectigo.owner.last.name": "",
+  "libcertifier.sectigo.owner.email": "",
   "libcertifier.sectigo.project.name": "",
   "libcertifier.sectigo.business.justification": "",
   "libcertifier.sectigo.subject.alt.names": [],
-  "libcertifier.sectigo.owner.email": ""
+  "libcertifier.sectigo.devhub.id": "",
+  "libcertifier.sectigo.validity.days": 365,
+  "libcertifier.sectigo.key.type": ""
 }

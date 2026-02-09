@@ -27,6 +27,7 @@
 #include "certifier/types.h"
 #include "certifier/util.h"
 #include "certifier/sectigo_client.h"
+#include "certifier/property_internal.h"
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -1203,6 +1204,31 @@ static int process_command_line(CERTIFIER * easy)
                 return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_OWNER_EMAIL, optarg);
             }
             break;
+        case 'D': // DevHub ID
+            if (optarg) {
+                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_DEVHUB_ID, optarg);
+            }
+            break;
+        case 'V': // Validity Days for Sectigo cert
+            if (optarg) {
+                if (atoi(optarg) > 0)
+                {
+                    return_code =
+                        certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_VALIDITY_DAYS, (const void *) (size_t) atoi(optarg));
+                }
+                else
+                {
+                    log_error("Expected input to be of positive integer type");
+                    return_code = 1;
+                }
+            }
+            break;
+        case 'W': // Key Type
+            if (!is_valid_sectigo_key_type(optarg)) {
+                log_error("Invalid key type. Supported key types: [RSA-2048, RSA-3072, RSA-4096, RSA-8192, ECC-PRIME256V1, ECC-SECP384R1]");
+                exit(0);
+            }
+            return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_KEY_TYPE, optarg);
         case '?':
             /* Case when user enters the command as
              * $ ./libCertifier -p

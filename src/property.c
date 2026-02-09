@@ -1440,7 +1440,7 @@ static int load_sectigo_fields_from_json(CertifierPropMap *propMap, JSON_Object 
         }
 
         const char *value_str = json_object_get_string(root, key);
-        if (value_str) {
+        if (value_str && strlen(value_str) > 0) {  // Only process non-empty values
             // Map config key to property enum
             if (strcmp(key, "libcertifier.sectigo.auth.token") == 0) {
                 log_info("Loaded sectigo auth token from config file.");

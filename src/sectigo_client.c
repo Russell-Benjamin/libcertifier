@@ -144,7 +144,7 @@ const char * node_address, const char * certifier_id, char ** out_cert)
     const char * tracking_id                     = property_get(props, CERTIFIER_OPT_TRACKING_ID);
     const char * bearer_token                    = property_get(props, CERTIFIER_OPT_SECTIGO_AUTH_TOKEN);
     const char * source                          = property_get(props, CERTIFIER_OPT_SECTIGO_SOURCE);
-    const char * sectigo_url                   = property_get(props, CERTIFIER_OPT_SECTIGO_URL);
+    const char * sectigo_base_url                = property_get(props, CERTIFIER_OPT_SECTIGO_URL);
 
     if (!bearer_token) {
         log_error("Missing CERTIFIER_OPT_SECTIGO_AUTH_TOKEN");
@@ -152,10 +152,10 @@ const char * node_address, const char * certifier_id, char ** out_cert)
         rc.application_error_msg  = util_format_error_here("Bearer token is missing");
         goto cleanup;
     }
-    if (!sectigo_url) {
+    if (!sectigo_base_url) {
         log_error("Missing CERTIFIER_OPT_SECTIGO_URL");
         rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
-        rc.application_error_msg  = util_format_error_here("Sectigo URL is missing");
+        rc.application_error_msg  = util_format_error_here("Sectigo base URL is missing");
         goto cleanup;
     }
     if (!source) {
@@ -165,8 +165,16 @@ const char * node_address, const char * certifier_id, char ** out_cert)
         goto cleanup;
     }
 
+    // Build full URL: base + endpoint
+    char sectigo_create_cert_url[256];
+    char create_cert_endpoint[] = "/api/createCertificate";
+    strncpy(sectigo_create_cert_url, sectigo_base_url, sizeof(sectigo_create_cert_url) - 1);
+    strncpy(sectigo_create_cert_url + strlen(sectigo_base_url), create_cert_endpoint,
+            sizeof(sectigo_create_cert_url) - 1 - strlen(sectigo_base_url));
+
     log_debug("Tracking ID is: %s\n", tracking_id);
     log_debug("Source ID is: %s\n", source);
+    log_debug("Sectigo URL: %s\n", sectigo_create_cert_url);
 
     if (bearer_token != NULL) {
     snprintf(auth_header, sizeof(auth_header), "Authorization: %s", bearer_token);
@@ -235,7 +243,7 @@ const char * node_address, const char * certifier_id, char ** out_cert)
     json_object_set_string(root_obj, "serverPlatform", params.server_platform ? params.server_platform : "");
     json_object_set_string(root_obj, "projectName", params.project_name ? params.project_name : "");
     json_object_set_string(root_obj, "businessJustification", params.business_justification ? params.business_justification : "");
-    json_object_set_string(root_obj, "certificateType", params.cert_type ? params.cert_type : "");
+    json_object_set_string(root_obj, "certificateType", "comodo");  // Always "comodo"
     json_object_set_string(root_obj, "ownerPhoneNumber", params.owner_phone_number ? params.owner_phone_number : "");
     json_object_set_string(root_obj, "ownerEmailAddress", params.owner_email ? params.owner_email : "");
     json_object_set_string(root_obj, "certifierUrl", params.sectigo_url ? params.sectigo_url : "");
@@ -272,7 +280,7 @@ const char * node_address, const char * certifier_id, char ** out_cert)
     json_object_set_value(root_obj, "ipAddresses", ip_array);
     json_body = json_serialize_to_string(root_value);
 
-    resp = http_post(props, sectigo_url, headers, json_body);
+    resp = http_post(props, sectigo_create_cert_url, headers, json_body);
     if (resp == NULL)
     {
         goto cleanup;

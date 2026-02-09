@@ -38,28 +38,28 @@ extern "C" {
 
 #define IMPULSE_URL "https://certs-dev.xpki.io/"
 typedef struct{
-const char * sectigo_auth_token;
-const char * sectigo_common_name;
-const char * sectigo_group_name;
-const char * sectigo_group_email;
-const char * sectigo_id;
-const char * sectigo_owner_first_name;
-const char * sectigo_owner_last_name;
-const char * sectigo_employee_type;
-const char * sectigo_server_platform;
-bool sectigo_sensitive;
-const char * sectigo_project_name;
-const char * sectigo_business_justification;
-const char * sectigo_subject_alt_names;
-const char * sectigo_ip_addresses;
-const char * sectigo_owner_phone_number;
-const char * sectigo_owner_email;
-const char * sectigo_cert_type;
+const char * auth_token;
+const char * common_name;
+const char * group_name;
+const char * group_email;
+const char * id;
+const char * owner_first_name;
+const char * owner_last_name;
+const char * employee_type;
+const char * server_platform;
+bool sensitive;
+const char * project_name;
+const char * business_justification;
+const char * subject_alt_names;
+const char * ip_addresses;
+const char * owner_phone_number;
+const char * owner_email;
+const char * cert_type;
 const char * sectigo_url;
-const char * sectigo_source;
+const char * source;
 
 
-} get_cert_sectigo_param_t;
+} sectigo_get_cert_param_t;
 
 
 typedef enum{
@@ -83,9 +83,9 @@ CertifierError sectigo_generate_certificate_signing_request(Certifier *certifier
 
 Certifier * get_sectigo_certifier_instance();
 
-SECTIGO_CLIENT_ERROR_CODE xc_sectigo_get_cert(get_cert_sectigo_param_t * params);
+SECTIGO_CLIENT_ERROR_CODE xc_sectigo_get_cert(sectigo_get_cert_param_t * params);
 
-SECTIGO_CLIENT_ERROR_CODE xc_sectigo_get_default_cert_param(get_cert_sectigo_param_t * params);
+SECTIGO_CLIENT_ERROR_CODE xc_sectigo_get_default_cert_param(sectigo_get_cert_param_t * params);
 
 #ifdef __cplusplus
 }

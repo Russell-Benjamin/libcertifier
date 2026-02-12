@@ -41,6 +41,7 @@ Certifier * get_sectigo_certifier_instance()
     if (certifier == NULL)
     {
         certifier = certifier_new();
+        certifier->sectigo_mode = true;
         certifier_set_property(certifier, CERTIFIER_OPT_LOG_LEVEL, (void *) (size_t) 0);
         
         // Load Sectigo config file if it exists
@@ -220,16 +221,19 @@ const char * node_address, const char * certifier_id, char ** out_cert)
     json_object_set_string(root_obj, "businessJustification", params.business_justification ? params.business_justification : "");
     json_object_set_string(root_obj, "certificateType", "comodo");  // Always "comodo"
     json_object_set_string(root_obj, "ownerEmailAddress", params.owner_email ? params.owner_email : "");
-    json_object_set_string(root_obj, "devhubId", params.devhub_id ? params.devhub_id : "");
     
-    // Convert validity_days to string
-    if (params.validity_days > 0) {
-        char validity_days_str[16];
-        snprintf(validity_days_str, sizeof(validity_days_str), "%zu", params.validity_days);
-        json_object_set_string(root_obj, "validityDays", validity_days_str);
+    // The following parameters are optional. Only include if set
+    if (params.devhub_id) {
+        json_object_set_string(root_obj, "devhubId", params.devhub_id);
     }
     
-    json_object_set_string(root_obj, "keyType", params.key_type ? params.key_type : "");
+    if (params.validity_days > 0) {
+        json_object_set_number(root_obj, "validityDays", (double)params.validity_days);
+    }
+   
+    if (params.key_type) {
+        json_object_set_string(root_obj, "keyType", params.key_type);
+    }
 
     // subjectAltNames as array
     JSON_Value *san_array = json_value_init_array();

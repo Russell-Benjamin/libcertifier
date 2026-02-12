@@ -685,7 +685,7 @@ SECTIGO_CLIENT_ERROR_CODE sectigo_process(SECTIGO_MODE mode, sectigo_parameter_t
             break;
         case 'V':
             sectigo_parameter->get_cert_param.validity_days = atol(optarg);
-            certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_VALIDITY_DAYS, optarg);
+            certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_VALIDITY_DAYS, (void *)(size_t)atol(optarg));
             break;
         case 'W':
             sectigo_parameter->get_cert_param.key_type = optarg;

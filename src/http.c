@@ -57,7 +57,6 @@ static void set_curl_options(CURL * curl, CertifierPropMap * prop_map)
 
     http_set_curlopt(curl, CURLOPT_SSL_VERIFYHOST, host_validation);
     http_set_curlopt(curl, CURLOPT_SSL_VERIFYPEER, peer_validation);
-    http_set_curlopt(curl, CURLOPT_FAILONERROR, 1L);
 
     http_set_curlopt(curl, CURLOPT_TIMEOUT, http_timeout);
     http_set_curlopt(curl, CURLOPT_CONNECTTIMEOUT, http_connect_timeout);

@@ -101,6 +101,8 @@ const char * get_default_ca_info();
  */
 int is_valid_sectigo_key_type(const char * key_type);
 
+int is_valid_sectigo_revocation_reason(const char * reason);
+
 #ifdef __cplusplus
 }
 #endif

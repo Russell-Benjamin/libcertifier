@@ -110,6 +110,35 @@ SECTIGO_CLIENT_ERROR_CODE xc_sectigo_get_default_cert_param(sectigo_get_cert_par
     return SECTIGO_CLIENT_SUCCESS;
 }
 
+SECTIGO_CLIENT_ERROR_CODE xc_sectigo_get_default_revoke_cert_param(sectigo_revoke_cert_param_t * params)
+{
+    Certifier * certifier = get_sectigo_certifier_instance();
+
+    memset(params, 0, sizeof(sectigo_revoke_cert_param_t));
+
+    void * param = NULL;
+
+    param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_AUTH_TOKEN);
+    params->auth_token = param ? XSTRDUP((const char *)param) : NULL;
+
+    param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_COMMON_NAME);
+    params->common_name = param ? XSTRDUP((const char *)param) : NULL;
+
+    param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_SERIAL_NUMBER);
+    params->serial_number = param ? XSTRDUP((const char *)param) : NULL;
+
+    param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_CERTIFICATE_ID);
+    params->certificate_id = param ? XSTRDUP((const char *)param) : NULL;
+
+    param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_REQUESTOR_EMAIL);
+    params->requestor_email = param ? XSTRDUP((const char *)param) : NULL;
+
+    param = certifier_get_property(certifier, CERTIFIER_OPT_SECTIGO_REVOCATION_REQUEST_REASON);
+    params->revocation_request_reason = param ? XSTRDUP((const char *)param) : NULL;
+
+    return SECTIGO_CLIENT_SUCCESS;
+}
+
 CertifierError sectigo_client_request_certificate(CertifierPropMap * props, const unsigned char * csr,
 const char * node_address, const char * certifier_id, char ** out_cert)
 {
@@ -305,6 +334,149 @@ cleanup:
     return rc;
 }
 
+CertifierError sectigo_client_revoke_certificate(CertifierPropMap * props)
+{
+    CertifierError rc = CERTIFIER_ERROR_INITIALIZER;
+    JSON_Value *root_value = NULL;
+    JSON_Object *root_obj = NULL;
+    char *json_body = NULL;
+    
+    char auth_header[VERY_LARGE_STRING_SIZE * 4] = "";
+    char tracking_header[LARGE_STRING_SIZE]      = "";
+    char source_header[SMALL_STRING_SIZE]        = "";
+    http_response * resp                         = NULL;
+    const char * tracking_id                     = property_get(props, CERTIFIER_OPT_TRACKING_ID);
+    const char * bearer_token                    = property_get(props, CERTIFIER_OPT_SECTIGO_AUTH_TOKEN);
+    const char * source                          = "libcertifier";
+    const char * sectigo_base_url                = property_get(props, CERTIFIER_OPT_SECTIGO_URL);
+
+    if (!bearer_token) {
+        log_error("Missing CERTIFIER_OPT_SECTIGO_AUTH_TOKEN");
+        rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+        rc.application_error_msg  = util_format_error_here("Bearer token is missing");
+        goto cleanup;
+    }
+    if (!sectigo_base_url) {
+        log_error("Missing CERTIFIER_OPT_SECTIGO_URL");
+        rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+        rc.application_error_msg  = util_format_error_here("Sectigo base URL is missing");
+        goto cleanup;
+    }
+
+    // Build full URL: base + endpoint
+    char sectigo_revoke_cert_url[256];
+    char revoke_cert_endpoint[] = "/api/revokeCertificate";
+    strncpy(sectigo_revoke_cert_url, sectigo_base_url, sizeof(sectigo_revoke_cert_url) - 1);
+    strncpy(sectigo_revoke_cert_url + strlen(sectigo_base_url), revoke_cert_endpoint,
+            sizeof(sectigo_revoke_cert_url) - 1 - strlen(sectigo_base_url));
+    log_debug("Tracking ID is: %s\n", tracking_id);
+    log_debug("Sectigo URL: %s\n", sectigo_revoke_cert_url);
+
+    if (bearer_token != NULL) {
+    snprintf(auth_header, sizeof(auth_header), "Authorization: %s", bearer_token);
+    }
+    snprintf(tracking_header, sizeof(tracking_header), "x-xpki-request-id: %s", tracking_id);
+    snprintf(source_header, sizeof(source_header), "x-xpki-source: %s", source);
+
+    const char *headers[] = {
+        "Accept: */*",
+        "Connection: keep-alive",
+        "cache-control: no-cache",
+        "Content-Type: application/json",
+        source_header,
+        tracking_header,
+        "x-xpki-partner-id: comcast",
+        auth_header,
+        NULL
+    };
+
+    // Take Mutex
+    if (pthread_mutex_lock(&lock) != 0)
+    {
+        rc.application_error_code = 17;
+        rc.application_error_msg = "sectigo_client_revoke_certificate: pthread_mutex_lock failed";
+        goto cleanup;
+    }
+
+    sectigo_revoke_cert_param_t params;
+    xc_sectigo_get_default_revoke_cert_param(&params);
+
+    // Build JSON body
+    root_value = json_value_init_object();
+    root_obj = json_value_get_object(root_value);
+
+    json_object_set_string(root_obj, "commonName", params.common_name ? params.common_name : "");
+    
+    if (params.requestor_email) {
+        json_object_set_string(root_obj, "requestorEmail", params.requestor_email);
+    }
+
+    if (params.revocation_request_reason) {
+        json_object_set_string(root_obj, "revocationRequestReason", params.revocation_request_reason);
+    }
+    
+    // The following parameters are optional. Only include if set
+    if (params.serial_number) {
+        json_object_set_string(root_obj, "serialNumber", params.serial_number);
+    }
+    
+    if (params.certificate_id) {
+        json_object_set_string(root_obj, "certificateId", params.certificate_id);
+    }
+
+    json_body = json_serialize_to_string(root_value);
+    if (!json_body) {
+        log_error("Failed to serialize JSON body");
+        rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+        rc.application_error_msg = util_format_error_here("Failed to serialize JSON body");
+        goto cleanup;
+    }
+
+    resp = http_put(props, sectigo_revoke_cert_url, headers, json_body);
+    if (resp == NULL)
+    {
+        goto cleanup;
+    }
+
+    // Give Mutex
+    if (pthread_mutex_unlock(&lock) != 0)
+    {
+        rc.application_error_code = 18;
+        rc.application_error_msg = "sectigo_client_revoke_certificate: pthread_mutex_unlock failed";
+        goto cleanup;
+    }
+    
+    rc.application_error_code = resp->error;
+
+    // Check for errors
+    if (resp->error != 0)
+    {
+        rc.application_error_msg = util_format_curl_error("sectigo_client_revoke_certificate", resp->http_code, resp->error,
+                                                          resp->error_msg, resp->payload, __FILE__, __LINE__);
+        goto cleanup;
+    }
+
+    if (resp->payload == NULL)
+    {
+        log_error("ERROR: Failed to populate payload");
+        goto cleanup;
+    }
+
+// Cleanup
+cleanup:
+
+    http_free_response(resp);
+
+    if (json_body) {
+        json_free_serialized_string(json_body);
+    }
+    if (root_value) {
+        json_value_free(root_value);
+    }
+
+    return rc;
+}   
+
 SECTIGO_CLIENT_ERROR_CODE xc_sectigo_get_cert(sectigo_get_cert_param_t * params)
 {
     Certifier *certifier = get_sectigo_certifier_instance();
@@ -379,6 +551,32 @@ SECTIGO_CLIENT_ERROR_CODE xc_sectigo_get_cert(sectigo_get_cert_param_t * params)
     if (csr_pem) XFREE(csr_pem);
     if (json_body) json_free_serialized_string(json_body);
     if (root_value) json_value_free(root_value);
+
+    return req_rc.application_error_code;
+}
+
+SECTIGO_CLIENT_ERROR_CODE xc_sectigo_revoke_cert(sectigo_revoke_cert_param_t * params)
+{
+    Certifier *certifier = get_sectigo_certifier_instance();
+
+    // Build JSON body
+    JSON_Value *root_value = json_value_init_object();
+    JSON_Object *root_obj = json_value_get_object(root_value);
+
+    if (params->common_name)
+        json_object_set_string(root_obj, "commonName", params->common_name);
+    if (params->serial_number)
+        json_object_set_string(root_obj, "serialNumber", params->serial_number);
+    if (params->certificate_id)
+        json_object_set_string(root_obj, "certificateId", params->certificate_id);
+    if (params->requestor_email)
+        json_object_set_string(root_obj, "requestorEmail", params->requestor_email);
+    if (params->revocation_request_reason)
+        json_object_set_string(root_obj, "revocationRequestReason", params->revocation_request_reason);
+
+    // Call the request function
+    CertifierPropMap *props = certifier_get_prop_map(certifier);
+    CertifierError req_rc = sectigo_client_revoke_certificate(props);
 
     return req_rc.application_error_code;
 }

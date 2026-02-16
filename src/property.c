@@ -237,6 +237,10 @@ struct _PropMap
     char * sectigo_url;
     char * devhub_id;
     char * key_type;
+    char * serial_number;
+    char * certificate_id;
+    char * revocation_request_reason;
+    char * requestor_email;
 };
 
 static void free_prop_map_values(CertifierPropMap * prop_map);
@@ -429,6 +433,18 @@ int sectigo_property_set(CertifierPropMap * prop_map, int name, const void * val
             break;
         case CERTIFIER_OPT_SECTIGO_KEY_TYPE:
             prop_map->key_type = XSTRDUP((const char *)value);
+            break;
+        case CERTIFIER_OPT_SECTIGO_SERIAL_NUMBER:
+            prop_map->serial_number = XSTRDUP((const char *)value);
+            break;
+        case CERTIFIER_OPT_SECTIGO_CERTIFICATE_ID:
+            prop_map->certificate_id = XSTRDUP((const char *)value);
+            break;
+        case CERTIFIER_OPT_SECTIGO_REQUESTOR_EMAIL:
+            prop_map->requestor_email = XSTRDUP((const char *)value);
+            break;
+        case CERTIFIER_OPT_SECTIGO_REVOCATION_REQUEST_REASON:
+            prop_map->revocation_request_reason = XSTRDUP((const char *)value); 
             break;
         default:
             log_warn("sectigo_property_set: unrecognized property [%d]", name);
@@ -941,6 +957,18 @@ void * property_get(CertifierPropMap * prop_map, CERTIFIER_OPT name)
         break;
     case CERTIFIER_OPT_SECTIGO_KEY_TYPE:
         retval = (void *) prop_map->key_type;
+        break;
+    case CERTIFIER_OPT_SECTIGO_SERIAL_NUMBER:
+        retval = (void *) prop_map->serial_number;
+        break;
+    case CERTIFIER_OPT_SECTIGO_CERTIFICATE_ID:
+        retval = (void *) prop_map->certificate_id;
+        break;
+    case CERTIFIER_OPT_SECTIGO_REQUESTOR_EMAIL:
+        retval = (void *) prop_map->requestor_email;
+        break;
+    case CERTIFIER_OPT_SECTIGO_REVOCATION_REQUEST_REASON:
+        retval = (void *) prop_map->revocation_request_reason;  
         break;
     default:
         log_warn("property_get: unrecognized property [%d]", name);
@@ -1474,6 +1502,22 @@ static int load_sectigo_fields_from_json(CertifierPropMap *propMap, JSON_Object 
                 }
                 log_info("Loaded sectigo key type: %s from config file.", value_str);
                 sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_KEY_TYPE, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.serial.number") == 0) {
+                log_info("Loaded sectigo serial number: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_SERIAL_NUMBER, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.certificate.id") == 0) {
+                log_info("Loaded sectigo certificate id: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_CERTIFICATE_ID, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.requestor.email") == 0) {
+                log_info("Loaded sectigo requestor email: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_REQUESTOR_EMAIL, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.revocation.request.reason") == 0) {
+                log_info("Loaded sectigo revocation request reason: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_REVOCATION_REQUEST_REASON, value_str);
             }
             // Add more mappings as needed
         }

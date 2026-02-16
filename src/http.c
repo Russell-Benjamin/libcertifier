@@ -135,7 +135,7 @@ static http_response * http_success_response(const char * payload, int http_code
     return resp;
 }
 
-static http_response * do_http(const CertifierPropMap * props, const char * url, const char * http_headers[], const char * body)
+static http_response * do_http(const CertifierPropMap * props, const char * url, const char * http_headers[], const char * body, const char * http_method)
 {
     char errbuf[CURL_ERROR_SIZE] = { 0 };
 
@@ -175,6 +175,11 @@ static http_response * do_http(const CertifierPropMap * props, const char * url,
     errbuf[0] = 0;
 
     http_set_curlopt(curl, CURLOPT_URL, url);
+
+    if (http_method != NULL)
+    {
+        http_set_curlopt(curl, CURLOPT_CUSTOMREQUEST, http_method);
+    }
 
     // post
     if ((body != NULL) && (XSTRLEN(body) > 0))
@@ -236,13 +241,18 @@ int http_destroy()
 
 http_response * http_get(const CertifierPropMap * props, const char * url, const char * http_headers[])
 {
-    return do_http(props, url, http_headers, NULL);
+    return do_http(props, url, http_headers, NULL, "GET");
 }
 
 http_response * http_post(const CertifierPropMap * props, const char * url, const char * http_headers[], const char * body)
 {
 
-    return do_http(props, url, http_headers, body);
+    return do_http(props, url, http_headers, body, "POST");
+}
+
+http_response * http_put(const CertifierPropMap * props, const char * url, const char * http_headers[], const char * body)
+{
+    return do_http(props, url, http_headers, body, "PUT");
 }
 
 void http_free_response(http_response * resp)

@@ -609,6 +609,46 @@ Disabled by default - Only error messages are shown.
 
 |===
 
+== *certifierUtil sectigo-get-cert options*
+|===
+| *Long Option* | *Short Option* | *Examples* | *Description*
+| help
+| h
+| --help +
+-h
+| Display this summary
+
+| common-name
+| C
+| --common-name <value> +
+-C <value>
+| Certificate common name
+
+| serial-number
+| N
+| --serial-number <value> +
+-N <value>
+| Certificate serial number (required for revocation)
+
+| certificate-id
+| e
+| --certificate-id <value> +
+-e <value>
+| Certificate ID (required for revocation)
+
+| requestor-email
+| s
+| --requestor-email <value> +
+-s <value>
+| Requestor email (required for revocation)
+
+| revocation-reason
+| R 
+| --revocation-reason <value> +
+-R <value>
+| Revocation reason
+|===
+
 *Configuration File*
 
 Configuration File is a file used to specify internal certifier util parameters such as timeouts, ecc curve types and other miscellaneous items. This file follows the JSON Format and can be manually editted from the `libcertifier.cfg.sample` template file present in the root directory.

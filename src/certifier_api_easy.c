@@ -110,6 +110,15 @@
     { NULL, 0, NULL, 0 }
     //make default arg '*' for san and ip 
     //only take in choices=['fte', 'contractor', 'associate']
+
+#define SECTIGO_REVOKE_CERT_LONG_OPTIONS \
+    { "common-name", required_argument, NULL, 'C' }, \
+    { "serial-number", required_argument, NULL, 'N' }, \
+    { "certificate-id", required_argument, NULL, 'e' }, \
+    { "requestor-email", required_argument, NULL, 's' }, \
+    { "revocation-request-reason", required_argument, NULL, 'R' }, \
+    { "config", required_argument, NULL, 'l' }, \
+    { NULL, 0, NULL, 0 }
     
 static void finish_operation(CERTIFIER * easy, int return_code, const char * operation_output);
 
@@ -325,7 +334,8 @@ CERTIFIER_MODE certifier_api_easy_get_mode(CERTIFIER * easy)
         { "renew-cert", CERTIFIER_MODE_RENEW_CERT },
         { "print-cert", CERTIFIER_MODE_PRINT_CERT },
         { "revoke", CERTIFIER_MODE_REVOKE_CERT },
-        { "sectigo-get-cert", CERTIFIER_MODE_SECTIGO_GET_CERT}
+        { "sectigo-get-cert", CERTIFIER_MODE_SECTIGO_GET_CERT},
+        { "sectigo-revoke-cert", CERTIFIER_MODE_SECTIGO_REVOKE_CERT},
     };
 
     for (int i = 0; i < sizeof(command_map) / sizeof(command_map_t); ++i)
@@ -810,6 +820,32 @@ static int do_sectigo_get_cert(CERTIFIER * easy)
     }
 }
 
+static int do_sectigo_revoke_cert(CERTIFIER * easy)
+{
+    // Check for required Sectigo properties
+    const char *common_name = certifier_get_property(easy->certifier, CERTIFIER_OPT_SECTIGO_COMMON_NAME);
+    const char *requestor_email = certifier_get_property(easy->certifier, CERTIFIER_OPT_SECTIGO_REQUESTOR_EMAIL);
+    const char *revocation_reason = certifier_get_property(easy->certifier, CERTIFIER_OPT_SECTIGO_REVOCATION_REQUEST_REASON);
+    if (util_is_empty(common_name) || util_is_empty(requestor_email) || util_is_empty(revocation_reason)) {
+        finish_operation(easy, CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1,
+            "Missing required Sectigo flag: (common-name, requestor-email, revocation-request-reason)");
+        return CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+    }
+
+    // Call Sectigo API to revoke certificate
+    CertifierPropMap * props = certifier_easy_api_get_props(easy->certifier);
+    CertifierError rc = sectigo_client_revoke_certificate(props);
+
+    //Handle result
+    if (rc.application_error_code == 0) {
+        finish_operation(easy, 0, "Certificate revoked successfully");
+        return 0;
+    } else {
+        finish_operation(easy, rc.application_error_code, rc.application_error_msg);
+        return rc.application_error_code;
+    }
+}
+
 
 char * certifier_api_easy_get_version(CERTIFIER * easy)
 {
@@ -850,7 +886,9 @@ int certifier_api_easy_print_helper(CERTIFIER * easy)
                  "renew-cert\n"
                  "print-cert\n"
                  "revoke\n"
-                 "get-sectigo-cert\n");
+                 "sectigo-get-cert\n"
+                 "sectigo-revoke-cert\n"
+                );
     }
 
     return 0;
@@ -911,6 +949,7 @@ static int process_command_line(CERTIFIER * easy)
     static const struct option print_cert_long_opts[]      = { BASE_LONG_OPTIONS, { NULL, 0, NULL, 0 } };
     static const struct option revoke_cert_long_opts[]     = { BASE_LONG_OPTIONS, CA_PATH_LONG_OPTION, { NULL, 0, NULL, 0 } };
     static const struct option sectigo_get_cert_long_opts[] = {BASE_LONG_OPTIONS, SECTIGO_GET_CERT_LONG_OPTIONS, {NULL, 0, NULL, 0}};
+    static const struct option sectigo_revoke_cert_long_opts[] = {BASE_LONG_OPTIONS, SECTIGO_REVOKE_CERT_LONG_OPTIONS, {NULL, 0, NULL, 0}};
 
     static command_opt_lut_t command_opt_lut[] = {
         { CERTIFIER_MODE_REGISTER, get_cert_short_options, get_cert_long_opts },
@@ -919,7 +958,8 @@ static int process_command_line(CERTIFIER * easy)
         { CERTIFIER_MODE_RENEW_CERT, renew_cert_short_options, renew_cert_long_opts },
         { CERTIFIER_MODE_PRINT_CERT, print_cert_short_options, print_cert_long_opts },
         { CERTIFIER_MODE_REVOKE_CERT, revoke_cert_short_options, revoke_cert_long_opts },
-        {CERTIFIER_MODE_SECTIGO_GET_CERT, sectigo_get_cert_short_options, sectigo_get_cert_long_opts}
+        { CERTIFIER_MODE_SECTIGO_GET_CERT, sectigo_get_cert_short_options, sectigo_get_cert_long_opts},
+        { CERTIFIER_MODE_SECTIGO_REVOKE_CERT, sectigo_get_cert_short_options, sectigo_revoke_cert_long_opts}
     };
 
     char * version_string = certifier_api_easy_get_version(easy);
@@ -1229,6 +1269,30 @@ static int process_command_line(CERTIFIER * easy)
                 exit(0);
             }
             return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_KEY_TYPE, optarg);
+        case 'R': // Revocation reason
+            if (optarg) {
+                if (optarg == NULL) {
+                    log_error("Invalid revocation reason. Supported reasons: []");
+                    exit(0);
+                }
+                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_REVOCATION_REQUEST_REASON, optarg);
+            }
+            break;
+        case 's': // Revocation requestor email
+            if (optarg) {
+                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_REQUESTOR_EMAIL, optarg);
+            }
+            break;
+        case 'N': // Serial Number
+            if (optarg) {
+                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_SERIAL_NUMBER, optarg);
+            }
+            break;
+        case 'e': // Certificate ID
+            if (optarg) {
+                return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_CERTIFICATE_ID, optarg);
+            }
+            break;
         case '?':
             /* Case when user enters the command as
              * $ ./libCertifier -p
@@ -1512,6 +1576,10 @@ switch(easy -> mode){
 
     case CERTIFIER_MODE_SECTIGO_GET_CERT:
         do_sectigo_get_cert(easy);
+        break;
+
+    case CERTIFIER_MODE_SECTIGO_REVOKE_CERT:
+        do_sectigo_revoke_cert(easy);
         break;
 
     default:

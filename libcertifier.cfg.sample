@@ -39,5 +39,10 @@
   "libcertifier.sectigo.subject.alt.names": [],
   "libcertifier.sectigo.devhub.id": "",
   "libcertifier.sectigo.validity.days": 365,
-  "libcertifier.sectigo.key.type": ""
+  "libcertifier.sectigo.key.type": "",
+  "libcertifier.sectigo.serial.number": "",
+  "libcertifier.sectigo.certificate.id": "",
+  "libcertifier.sectigo.requestor.email": "",
+  "libcertifier.sectigo.revocation.request.reason": ""
+
 }

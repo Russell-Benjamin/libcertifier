@@ -53,6 +53,8 @@ http_response * http_get(const CertifierPropMap * props, const char * url, const
 
 http_response * http_post(const CertifierPropMap * props, const char * url, const char * http_headers[], const char * body);
 
+http_response * http_put(const CertifierPropMap * props, const char * url, const char * http_headers[], const char * body);
+
 void http_free_response(http_response * resp);
 
 #ifdef __cplusplus

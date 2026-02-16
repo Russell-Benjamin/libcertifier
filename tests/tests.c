@@ -54,7 +54,7 @@ static char * g_mock_http_expected_body      = NULL;
 static http_response g_mock_http_response;
 
 // FIXME: use cmocka object mocking for this instead of assert
-static http_response * do_http(const char * url, const char * http_headers[], const char * body)
+static http_response * do_http(const char * url, const char * http_headers[], const char * body, const char * http_method)
 {
     if (g_mock_http_expected_url != NULL)
         assert_string_equal(g_mock_http_expected_url, url);
@@ -72,13 +72,18 @@ static http_response * do_http(const char * url, const char * http_headers[], co
 
 http_response * http_get(const CertifierPropMap * props, const char * url, const char * http_headers[])
 {
-    return do_http(url, http_headers, NULL);
+    return do_http(url, http_headers, NULL, "GET");
 }
 
 http_response * http_post(const CertifierPropMap * props, const char * url, const char * http_headers[], const char * body)
 {
 
-    return do_http(url, http_headers, body);
+    return do_http(url, http_headers, body, "POST");
+}
+
+http_response * http_put(const CertifierPropMap * props, const char * url, const char * http_headers[], const char * body)
+{
+    return do_http(url, http_headers, body, "PUT");
 }
 
 void http_free_response(http_response * resp)

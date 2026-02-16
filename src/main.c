@@ -41,6 +41,7 @@ typedef enum
 {
     SECTIGO_MODE_NONE,
     SECTIGO_MODE_GET_CERT,
+    SECTIGO_MODE_REVOKE_CERT,
     SECTIGO_MODE_PRINT_HELP
     
 } SECTIGO_MODE;
@@ -54,7 +55,8 @@ typedef union
 
 typedef union 
 {
-  sectigo_get_cert_param_t get_cert_param;  
+  sectigo_get_cert_param_t get_cert_param;
+  sectigo_revoke_cert_param_t revoke_cert_param;  
 } sectigo_parameter_t;
 
 
@@ -113,7 +115,9 @@ SECTIGO_MODE sectigo_get_mode(int argc, char ** argv){
     } command_map_t;
 
     command_map_t command_map[] = {
-        {"sectigo-help", SECTIGO_MODE_PRINT_HELP},  {"sectigo-get-cert", SECTIGO_MODE_GET_CERT}
+        {"sectigo-help", SECTIGO_MODE_PRINT_HELP},  
+        {"sectigo-get-cert", SECTIGO_MODE_GET_CERT},
+        {"sectigo-revoke-cert", SECTIGO_MODE_REVOKE_CERT}
     };
     
     for(int i = 0; i < sizeof(command_map) / sizeof(command_map_t); ++i){
@@ -156,6 +160,7 @@ XPKI_CLIENT_ERROR_CODE xpki_print_helper(XPKI_MODE mode)
                  "print-cert\n"
                  "revoke\n"
                  "sectigo-get-cert\n"
+                 "sectigo-revoke-cert\n"
                  "sectigo-help\n");
     }
 
@@ -284,10 +289,20 @@ static const char * get_sectigo_command_opt_helper(SECTIGO_MODE mode)
     "--url [value] (-u)\n"                          \
     "--config [value] (-l)\n"                       \
 
+#define SECTIGO_REVOKE_CERT_HELPER                  \
+    "--common-name [value] (-C)\n"                  \
+    "--serial-number [value] (-N)\n"                \
+    "--certificate-id [value] (-e)\n"               \
+    "--requestor-email [value] (-s)\n"              \
+    "--revocation-request-reason [value] (-R)\n"    \
+    "--config [value] (-l)\n"                       \
+
     switch (mode)
     {
     case SECTIGO_MODE_GET_CERT:
         return SECTIGO_BASE_HELPER SECTIGO_GET_CERT_HELPER;
+    case SECTIGO_MODE_REVOKE_CERT:
+        return SECTIGO_BASE_HELPER SECTIGO_REVOKE_CERT_HELPER;
     case SECTIGO_MODE_PRINT_HELP:
         return SECTIGO_BASE_HELPER;
     default:
@@ -612,6 +627,9 @@ SECTIGO_CLIENT_ERROR_CODE sectigo_process(SECTIGO_MODE mode, sectigo_parameter_t
     case SECTIGO_MODE_GET_CERT:
         ReturnErrorOnFailure(xc_sectigo_get_default_cert_param(&sectigo_parameter->get_cert_param));
         break;
+    case SECTIGO_MODE_REVOKE_CERT:
+        ReturnErrorOnFailure(xc_sectigo_get_default_revoke_cert_param(&sectigo_parameter->revoke_cert_param));
+        break;
     default:
         return SECTIGO_CLIENT_NOT_IMPLEMENTED;
     }
@@ -691,6 +709,22 @@ SECTIGO_CLIENT_ERROR_CODE sectigo_process(SECTIGO_MODE mode, sectigo_parameter_t
             sectigo_parameter->get_cert_param.key_type = optarg;
             certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_KEY_TYPE, optarg);
             break;
+        case 'R':
+            sectigo_parameter->revoke_cert_param.revocation_request_reason = optarg;
+            certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_REVOCATION_REQUEST_REASON, optarg);
+            break;
+        case 'N':
+            sectigo_parameter->revoke_cert_param.serial_number = optarg;
+            certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_SERIAL_NUMBER, optarg);
+            break;
+        case 'e':
+            sectigo_parameter->revoke_cert_param.certificate_id = optarg;
+            certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_CERTIFICATE_ID, optarg);
+            break;
+        case 's':
+            sectigo_parameter->revoke_cert_param.requestor_email = optarg;
+            certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_REQUESTOR_EMAIL, optarg);
+            break;
         case '?':
                 log_info("Invalid or missing Sectigo option");
                 error_code = SECTIGO_CLIENT_INVALID_ARGUMENT;
@@ -722,6 +756,9 @@ SECTIGO_CLIENT_ERROR_CODE sectigo_perform(int argc, char ** argv)
     {
     case SECTIGO_MODE_GET_CERT:
         return xc_sectigo_get_cert(&sectigo_parameter.get_cert_param);
+        break;
+    case SECTIGO_MODE_REVOKE_CERT:
+        return xc_sectigo_revoke_cert(&sectigo_parameter.revoke_cert_param);
         break;
     default:
         break;

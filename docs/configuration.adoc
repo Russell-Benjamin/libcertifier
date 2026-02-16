@@ -33,16 +33,23 @@ xref:libcertifier.adoc[*Back to Manual*]
 | *Property Name* | *Default Value* | *Description* 
 | libcertifier.sectigo.url   | https://certs.xpki.io/api/createCertificate |
 | libcertifier.sectigo.auth.token   | |
-| libcertifier.sectigo.common.name   | example.com |
-| libcertifier.sectigo.group.name   | ExampleGroup |
-| libcertifier.sectigo.group.email   | group@example.com |
+| libcertifier.sectigo.common.name   | |
+| libcertifier.sectigo.group.name   | |
+| libcertifier.sectigo.group.email   | |
 | libcertifier.sectigo.id   | user123 |
-| libcertifier.sectigo.owner.first.name   | First |
-| libcertifier.sectigo.owner.last.name   | Last |
-| libcertifier.sectigo.project.name   | ExampleProject |
-| libcertifier.sectigo.business.justification   | Testing |
+| libcertifier.sectigo.owner.first.name   | |
+| libcertifier.sectigo.owner.last.name   | |
+| libcertifier.sectigo.project.name   | |
+| libcertifier.sectigo.business.justification   | |
 | libcertifier.sectigo.subject.alt.names   | [] |
-| libcertifier.sectigo.owner.email   | owner@example.com |
+| libcertifier.sectigo.owner.email   | |
+| libcertifier.sectigo.devhub.id   | |
+| libcertifier.sectigo.validity.days   | 365 |
+| libcertifier.sectigo.key.type   | |
+| libcertifier.sectigo.serial.number   | |
+| libcertifier.sectigo.certificate.id   | |
+| libcertifier.sectigo.requestor.email   | |
+| libcertifier.sectigo.revocation.request.reason   | |
 |=======
 
 == Extended Key Usage values:

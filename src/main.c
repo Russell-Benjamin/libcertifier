@@ -194,7 +194,6 @@ SECTIGO_CLIENT_ERROR_CODE sectigo_print_helper(SECTIGO_MODE mode)
 #define GET_CERT_SHORT_OPTIONS "fT:P:o:i:n:F:a:w:"
 #define VALIDITY_DAYS_SHORT_OPTION "t:"
 #define CA_PATH_SHORT_OPTION "c:"
-#define SECTIGO_GET_CERT_SHORT_OPTIONS "C:I:e:s:N:r:b:A:x:K:u:G:E:O:J:Z:U:T:l:W"
 
 #define BASE_LONG_OPTIONS                                                                                                          \
     { "help", no_argument, NULL, 'h' }, { "input-p12-path", required_argument, NULL, 'k' },                                        \
@@ -303,7 +302,6 @@ static const char * get_sectigo_command_opt_helper(SECTIGO_MODE mode)
     "--group-name [value] (-G)\n"                   \
     "--group-email [value] (-E)\n"                  \
     "--status [value] (-S)\n"                       \
-    "--common-name [value] (-C)\n"                  \
     "--offset [value] (-o)\n"                       \
     "--limit [value] (-L)\n" \
     "--start-date [value] (-f)\n" \
@@ -323,14 +321,15 @@ static const char * get_sectigo_command_opt_helper(SECTIGO_MODE mode)
     "--auth-token [value] (-K)\n"                   \
    "--common-name [value] (-C)\n"                   \
     "--serial-number [value] (-N)\n"                \
-    "--certificate-id [value] (-e)\n"               \
+    "--certificate-id [value] (-i)\n"               \
     "--requestor-email [value] (-s)\n"              \
+    "--config [value] (-l)\n" \
 
 #define SECTIGO_REVOKE_CERT_HELPER                  \
     "--auth-token [value] (-K)\n"                   \
     "--common-name [value] (-C)\n"                  \
     "--serial-number [value] (-N)\n"                \
-    "--certificate-id [value] (-e)\n"               \
+    "--certificate-id [value] (-i)\n"               \
     "--requestor-email [value] (-s)\n"              \
     "--revocation-request-reason [value] (-R)\n"    \
     "--config [value] (-l)\n"                       \
@@ -633,7 +632,11 @@ XPKI_CLIENT_ERROR_CODE process(XPKI_MODE mode, xc_parameter_t * xc_parameter, in
 }
 
 // --- Sectigo Option Table ---
-static const char * const sectigo_get_cert_short_options = "C:I:e:s:N:r:b:A:x:K:u:G:E:O:J:Z:U:T:l:W:V:D:h";
+static const char * const sectigo_get_cert_short_options = "C:I:r:b:A:K:u:G:E:O:J:Z:W:V:D:l:h";
+static const char * const sectigo_search_cert_short_options = "K:C:G:E:S:o:L:f:t:i:p:q:c:a:y:m:D:W:l:h";
+static const char * const sectigo_renew_cert_short_options = "K:C:N:i:s:l:h";
+static const char * const sectigo_revoke_cert_short_options = "K:C:N:i:s:R:l:h";
+
 static const struct option sectigo_get_cert_long_opts[] = {
     { "common-name", required_argument, NULL, 'C' },
     { "id", required_argument, NULL, 'I' },
@@ -653,9 +656,73 @@ static const struct option sectigo_get_cert_long_opts[] = {
     { "config", required_argument, NULL, 'l' },
     { "help", no_argument, NULL, 'h' },
     { NULL, 0, NULL, 0 }
-    //make default arg '*' for san and ip 
-    //only take in choices=['fte', 'contractor', 'associate']
 };
+
+static const struct option sectigo_search_cert_long_opts[] = {
+    { "auth-token", required_argument, NULL, 'K' },
+    { "common-name", required_argument, NULL, 'C' },
+    { "group-name", required_argument, NULL, 'G' },
+    { "group-email", required_argument, NULL, 'E' },
+    { "status", required_argument, NULL, 'S' },
+    { "offset", required_argument, NULL, 'o' },
+    { "limit", required_argument, NULL, 'L' },
+    { "start-date", required_argument, NULL, 'f' },
+    { "end-date", required_argument, NULL, 't' },
+    { "certificate-id", required_argument, NULL, 'i' },
+    { "validity-start-date", required_argument, NULL, 'p' },
+    { "validity-end-date", required_argument, NULL, 'q' },
+    { "cert-order", required_argument, NULL, 'c' },
+    { "is-cn-in-san", required_argument, NULL, 'a' },
+    { "request-type", required_argument, NULL, 'y' },
+    { "timestamp", required_argument, NULL, 'm' },
+    { "devhub-id", required_argument, NULL, 'D' },
+    { "key-type", required_argument, NULL, 'W' },
+    { "config", required_argument, NULL, 'l' },
+    { "help", no_argument, NULL, 'h' },
+    { NULL, 0, NULL, 0 }
+};
+
+static const struct option sectigo_renew_cert_long_opts[] = {
+    { "auth-token", required_argument, NULL, 'K' },
+    { "common-name", required_argument, NULL, 'C' },
+    { "serial-number", required_argument, NULL, 'N' },
+    { "certificate-id", required_argument, NULL, 'i' },
+    { "requestor-email", required_argument, NULL, 's' },
+    { "config", required_argument, NULL, 'l' },
+    { "help", no_argument, NULL, 'h' },
+    { NULL, 0, NULL, 0 }
+};
+
+static const struct option sectigo_revoke_cert_long_opts[] = {
+    { "auth-token", required_argument, NULL, 'K' },
+    { "common-name", required_argument, NULL, 'C' },
+    { "serial-number", required_argument, NULL, 'N' },
+    { "certificate-id", required_argument, NULL, 'i' },
+    { "requestor-email", required_argument, NULL, 's' },
+    { "revocation-request-reason", required_argument, NULL, 'R' },
+    { "config", required_argument, NULL, 'l' },
+    { "help", no_argument, NULL, 'h' },
+    { NULL, 0, NULL, 0 }
+};
+
+static sectigo_command_opt_lut_t sectigo_command_opt_lut[] = {
+    { SECTIGO_MODE_GET_CERT, sectigo_get_cert_short_options, sectigo_get_cert_long_opts },
+    { SECTIGO_MODE_SEARCH_CERT, sectigo_search_cert_short_options, sectigo_search_cert_long_opts },
+    { SECTIGO_MODE_RENEW_CERT, sectigo_renew_cert_short_options, sectigo_renew_cert_long_opts },
+    { SECTIGO_MODE_REVOKE_CERT, sectigo_revoke_cert_short_options, sectigo_revoke_cert_long_opts },
+};
+
+static size_t get_sectigo_command_opt_index(sectigo_command_opt_lut_t * lut, size_t n_entries, SECTIGO_MODE mode)
+{
+    for (size_t i = 0; i < n_entries; ++i)
+    {
+        if (lut[i].mode == mode)
+        {
+            return i;
+        }
+    }
+    return 0; // fallback
+}
 
 // --- Sectigo Option Parsing ---
 SECTIGO_CLIENT_ERROR_CODE sectigo_process(SECTIGO_MODE mode, sectigo_parameter_t * sectigo_parameter, int argc, char ** argv)
@@ -684,9 +751,18 @@ SECTIGO_CLIENT_ERROR_CODE sectigo_process(SECTIGO_MODE mode, sectigo_parameter_t
 
     for (;;)
     {
-        int option_index;
-        int opt = XGETOPT_LONG(argc, argv, sectigo_get_cert_short_options,
-                               sectigo_get_cert_long_opts, &option_index);
+        int option_index = 0;
+        int sectigo_opt_index = get_sectigo_command_opt_index(
+            sectigo_command_opt_lut, 
+            sizeof(sectigo_command_opt_lut) / sizeof(*sectigo_command_opt_lut), 
+            mode
+        );
+
+        int opt = XGETOPT_LONG(argc, argv, 
+                       sectigo_command_opt_lut[sectigo_opt_index].short_opts,
+                       sectigo_command_opt_lut[sectigo_opt_index].long_opts, 
+                       &option_index
+        );
 
         if (opt == -1 || error_code != SECTIGO_CLIENT_SUCCESS)
         {
@@ -765,7 +841,7 @@ SECTIGO_CLIENT_ERROR_CODE sectigo_process(SECTIGO_MODE mode, sectigo_parameter_t
             sectigo_parameter->revoke_cert_param.serial_number = optarg;
             certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_SERIAL_NUMBER, optarg);
             break;
-        case 'e':
+        case 'i':
             sectigo_parameter->revoke_cert_param.certificate_id = optarg;
             certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_CERTIFICATE_ID, optarg);
             break;

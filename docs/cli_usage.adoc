@@ -573,7 +573,7 @@ Disabled by default - Only error messages are shown.
 
 | owner-last-name
 | J
-| --owner-lname <value> +
+| --owner-last-name <value> +
 -J <value>
 | Owner last name
 
@@ -583,11 +583,23 @@ Disabled by default - Only error messages are shown.
 -Z <value>
 | Owner email
 
-| cert-type
-| T
-| --cert-type <value> +
--T <value>
-| Certificate type
+| devhub-id
+| D
+| --devhub-id <value> +
+-D <value>
+| DevHub ID
+
+| validity-days
+| V
+| --validity-days <value> +
+-V <value>
+| Validity days for the certificate
+
+| key-type
+| W
+| --key-type <value> +
+-W <value>
+| Key type for the certificate. Supported key types: [RSA-2048, RSA-3072, RSA-4096, RSA-8192, ECC-PRIME256V1, ECC-SECP384R1]
 
 | auth-token
 | K
@@ -606,7 +618,6 @@ Disabled by default - Only error messages are shown.
 | --config <file> +
 -l <file>
 | Path to config file
-
 |===
 
 == *certifierUtil sectigo-search-cert options*
@@ -726,6 +737,11 @@ Disabled by default - Only error messages are shown.
 -W <value>
 | To fetch certificate(s) that match this public key type/algorithm. Supported key types: [RSA-2048, RSA-3072, RSA-4096, RSA-8192, ECC-PRIME256V1, ECC-SECP384R1]
 
+| config
+| l
+| --config <file> +
+-l <file>
+| Path to config file
 |===
 
 == *certifierUtil sectigo-renew-cert options*
@@ -766,6 +782,12 @@ Disabled by default - Only error messages are shown.
 | --requestor-email <value> +
 -s <value>
 | Requestor email (required for renewal)
+
+| config
+| l
+| --config <file> +
+-l <file>
+| Path to config file
 |===
 
 == *certifierUtil sectigo-revoke-cert options*
@@ -807,11 +829,17 @@ Disabled by default - Only error messages are shown.
 -s <value>
 | Requestor email (required for revocation)
 
-| revocation-reason
+| revocation-request-reason
 | R 
-| --revocation-reason <value> +
+| --revocation-request-reason <value> +
 -R <value>
 | Revocation reason
+
+| config
+| l
+| --config <file> +
+-l <file>
+| Path to config file
 |===
 
 *Configuration File*

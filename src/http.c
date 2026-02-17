@@ -19,6 +19,7 @@
 #include "certifier/http.h"
 #include "certifier/httpdebug.h"
 #include "certifier/log.h"
+#include "certifier/parson.h"
 #include "certifier/property.h"
 #include "certifier/types.h"
 #include <curl/curl.h>
@@ -224,8 +225,23 @@ static http_response * do_http(const CertifierPropMap * props, const char * url,
     }
     else
     {
-        log_debug("do_http returned: %s", cf->payload);
+        // Try to parse and pretty-print if it's JSON
+        JSON_Value *parsed_json = json_parse_string_with_comments(cf->payload);
+        if (parsed_json != NULL) {
+            char *pretty_json = json_serialize_to_string_pretty(parsed_json);
+            if (pretty_json) {
+                log_debug("do_http returned: %s", pretty_json);
+                json_free_serialized_string(pretty_json);
+            } else {
+                log_debug("do_http returned: %s", cf->payload);
+            }
+            json_value_free(parsed_json);
+        } else {
+            log_debug("do_http returned: %s", cf->payload);
+        }
         return http_success_response(cf->payload, http_code, errbuf, res);
+        // log_debug("do_http returned: %s", cf->payload);
+        // return http_success_response(cf->payload, http_code, errbuf, res);
     }
 }
 

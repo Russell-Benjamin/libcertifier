@@ -53,6 +53,30 @@ Certifier * get_sectigo_certifier_instance()
     return certifier;
 }
 
+static void append_query_param(char *url, size_t url_size, const char *key, const char *value, int *first_param)
+{
+    if (!value || strlen(value) == 0) {
+        return;
+    }
+    
+    size_t current_len = strlen(url);
+    snprintf(url + current_len, url_size - current_len,
+             "%s%s=%s", *first_param ? "?" : "&", key, value);
+    *first_param = 0;
+}
+
+// For numeric parameters
+static void append_query_param_num(char *url, size_t url_size, const char *key, size_t value, int *first_param)
+{
+    if (value == 0) {
+        return;
+    }
+    
+    size_t current_len = strlen(url);
+    snprintf(url + current_len, url_size - current_len,
+             "%s%s=%zu", *first_param ? "?" : "&", key, value);
+    *first_param = 0;
+}
 
 SECTIGO_CLIENT_ERROR_CODE xc_sectigo_get_default_cert_param(sectigo_get_cert_param_t * params)
 {
@@ -360,6 +384,133 @@ cleanup:
     return rc;
 }
 
+CertifierError sectigo_client_search_certificates(CertifierPropMap * props)
+{
+    CertifierError rc = CERTIFIER_ERROR_INITIALIZER;
+
+    char auth_header[VERY_LARGE_STRING_SIZE * 4] = "";
+    char tracking_header[LARGE_STRING_SIZE]      = "";
+    char source_header[SMALL_STRING_SIZE]        = "";
+    http_response * resp                         = NULL;
+    const char * tracking_id                     = property_get(props, CERTIFIER_OPT_TRACKING_ID);
+    const char * bearer_token                    = property_get(props, CERTIFIER_OPT_SECTIGO_AUTH_TOKEN);
+    const char * source                          = "libcertifier";
+    const char * sectigo_base_url                = property_get(props, CERTIFIER_OPT_SECTIGO_URL);
+
+    if (!bearer_token) {
+        log_error("Missing CERTIFIER_OPT_SECTIGO_AUTH_TOKEN");
+        rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+        rc.application_error_msg  = util_format_error_here("Bearer token is missing");
+        goto cleanup;
+    }
+    if (!sectigo_base_url) {
+        log_error("Missing CERTIFIER_OPT_SECTIGO_URL");
+        rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+        rc.application_error_msg  = util_format_error_here("Sectigo base URL is missing");
+        goto cleanup;
+    }
+
+    // Build full URL: base + endpoint
+    char sectigo_search_cert_url[256];
+    char search_cert_endpoint[] = "/api/getCertificates";
+    strncpy(sectigo_search_cert_url, sectigo_base_url, sizeof(sectigo_search_cert_url) - 1);
+    strncpy(sectigo_search_cert_url + strlen(sectigo_base_url), search_cert_endpoint,
+            sizeof(sectigo_search_cert_url) - 1 - strlen(sectigo_base_url));
+    log_debug("Tracking ID is: %s\n", tracking_id);
+
+    if (bearer_token != NULL) {
+        snprintf(auth_header, sizeof(auth_header), "Authorization: %s", bearer_token);
+    }
+    snprintf(tracking_header, sizeof(tracking_header), "x-xpki-request-id: %s", tracking_id);
+    snprintf(source_header, sizeof(source_header), "x-xpki-source: %s", source);
+
+    const char *headers[] = {
+        "Accept: */*",
+        "Connection: keep-alive",
+        "cache-control: no-cache",
+        "Content-Type: application/json",
+        source_header,
+        tracking_header,
+        "x-xpki-partner-id: comcast",
+        auth_header,
+        NULL
+    };
+
+    // Take Mutex
+    if (pthread_mutex_lock(&lock) != 0)
+    {
+        rc.application_error_code = 17;
+        rc.application_error_msg = "sectigo_client_search_certificates: pthread_mutex_lock failed";
+        goto cleanup;
+    }
+
+    sectigo_search_cert_param_t params;
+
+    int first_param = 1; // Used to determine whether to prepend '?' or '&' for query parameters
+    append_query_param(sectigo_search_cert_url, sizeof(sectigo_search_cert_url), "groupName", property_get(props, CERTIFIER_OPT_SECTIGO_GROUP_NAME), &first_param);
+    append_query_param(sectigo_search_cert_url, sizeof(sectigo_search_cert_url), "groupEmailAddress", property_get(props, CERTIFIER_OPT_SECTIGO_GROUP_EMAIL), &first_param);
+    append_query_param(sectigo_search_cert_url, sizeof(sectigo_search_cert_url), "status", property_get(props, CERTIFIER_OPT_SECTIGO_STATUS), &first_param);
+    append_query_param(sectigo_search_cert_url, sizeof(sectigo_search_cert_url), "commonName", property_get(props, CERTIFIER_OPT_SECTIGO_COMMON_NAME), &first_param);
+    append_query_param(sectigo_search_cert_url, sizeof(sectigo_search_cert_url), "offset", property_get(props, CERTIFIER_OPT_SECTIGO_OFFSET), &first_param);
+    append_query_param_num(sectigo_search_cert_url, sizeof(sectigo_search_cert_url), "limit", (size_t) property_get(props, CERTIFIER_OPT_SECTIGO_LIMIT), &first_param);
+    append_query_param(sectigo_search_cert_url, sizeof(sectigo_search_cert_url), "startDate", property_get(props, CERTIFIER_OPT_SECTIGO_START_DATE), &first_param);
+    append_query_param(sectigo_search_cert_url, sizeof(sectigo_search_cert_url), "endDate", property_get(props, CERTIFIER_OPT_SECTIGO_END_DATE), &first_param);
+    append_query_param(sectigo_search_cert_url, sizeof(sectigo_search_cert_url), "validityStartDate", property_get(props, CERTIFIER_OPT_SECTIGO_VALIDITY_START_DATE), &first_param);
+    append_query_param(sectigo_search_cert_url, sizeof(sectigo_search_cert_url), "validityEndDate", property_get(props, CERTIFIER_OPT_SECTIGO_VALIDITY_END_DATE), &first_param);
+    append_query_param(sectigo_search_cert_url, sizeof(sectigo_search_cert_url), "certOrder", property_get(props, CERTIFIER_OPT_SECTIGO_CERTIFICATE_ORDER), &first_param);
+    append_query_param(sectigo_search_cert_url, sizeof(sectigo_search_cert_url), "isCNinSAN", property_get(props, CERTIFIER_OPT_SECTIGO_IS_CN_IN_SAN), &first_param);
+    append_query_param(sectigo_search_cert_url, sizeof(sectigo_search_cert_url), "requestType", property_get(props, CERTIFIER_OPT_SECTIGO_REQUEST_TYPE), &first_param);
+    append_query_param(sectigo_search_cert_url, sizeof(sectigo_search_cert_url), "timestamp", property_get(props, CERTIFIER_OPT_SECTIGO_TIMESTAMP), &first_param);
+    append_query_param(sectigo_search_cert_url, sizeof(sectigo_search_cert_url), "devhubId", property_get(props, CERTIFIER_OPT_SECTIGO_DEVHUB_ID), &first_param);
+    append_query_param(sectigo_search_cert_url, sizeof(sectigo_search_cert_url), "keyType", property_get(props, CERTIFIER_OPT_SECTIGO_KEY_TYPE), &first_param);
+
+    // certificateId is numeric for this endpoint, but a string for others, so handle separately
+    const char *cert_id_str = property_get(props, CERTIFIER_OPT_SECTIGO_CERTIFICATE_ID);
+    if (cert_id_str && strlen(cert_id_str) > 0) {
+        size_t cert_id_num = (size_t)atol(cert_id_str);
+        append_query_param_num(sectigo_search_cert_url, sizeof(sectigo_search_cert_url), "certificateId", cert_id_num, &first_param);
+    }
+
+    log_debug("Sectigo URL: %s\n", sectigo_search_cert_url);
+
+    resp = http_get(props, sectigo_search_cert_url, headers);
+    if (resp == NULL)
+    {
+        goto cleanup;
+    }
+
+    // Give Mutex
+    if (pthread_mutex_unlock(&lock) != 0)
+    {
+        rc.application_error_code = 18;
+        rc.application_error_msg = "sectigo_client_search_certificates: pthread_mutex_unlock failed";
+        goto cleanup;
+    }
+    
+    rc.application_error_code = resp->error;
+
+    // Check for errors
+    if (resp->error != 0)
+    {
+        rc.application_error_msg = util_format_curl_error("sectigo_client_search_certificates", resp->http_code, resp->error,
+                                                          resp->error_msg, resp->payload, __FILE__, __LINE__);
+        goto cleanup;
+    }
+
+    if (resp->payload == NULL)
+    {
+        log_error("ERROR: Failed to populate payload");
+        goto cleanup;
+    }
+
+// Cleanup
+cleanup:
+
+    http_free_response(resp);
+
+    return rc;
+}
+
 CertifierError sectigo_client_renew_certificate(CertifierPropMap * props)
 {
     CertifierError rc = CERTIFIER_ERROR_INITIALIZER;
@@ -399,7 +550,7 @@ CertifierError sectigo_client_renew_certificate(CertifierPropMap * props)
     log_debug("Sectigo URL: %s\n", sectigo_renew_cert_url);
 
     if (bearer_token != NULL) {
-    snprintf(auth_header, sizeof(auth_header), "Authorization: %s", bearer_token);
+        snprintf(auth_header, sizeof(auth_header), "Authorization: %s", bearer_token);
     }
     snprintf(tracking_header, sizeof(tracking_header), "x-xpki-request-id: %s", tracking_id);
     snprintf(source_header, sizeof(source_header), "x-xpki-source: %s", source);
@@ -710,6 +861,17 @@ SECTIGO_CLIENT_ERROR_CODE xc_sectigo_get_cert(sectigo_get_cert_param_t * params)
     if (csr_pem) XFREE(csr_pem);
     if (json_body) json_free_serialized_string(json_body);
     if (root_value) json_value_free(root_value);
+
+    return req_rc.application_error_code;
+}
+
+SECTIGO_CLIENT_ERROR_CODE xc_sectigo_search_cert(sectigo_search_cert_param_t * params)
+{
+    Certifier *certifier = get_sectigo_certifier_instance();
+
+    // Call the request function
+    CertifierPropMap *props = certifier_get_prop_map(certifier);
+    CertifierError req_rc = sectigo_client_search_certificates(props);
 
     return req_rc.application_error_code;
 }

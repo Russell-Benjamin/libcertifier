@@ -43,6 +43,16 @@
   "libcertifier.sectigo.serial.number": "",
   "libcertifier.sectigo.certificate.id": "",
   "libcertifier.sectigo.requestor.email": "",
-  "libcertifier.sectigo.revocation.request.reason": ""
-
+  "libcertifier.sectigo.revocation.request.reason": "",
+  "libcertifier.sectigo.status": "",
+  "libcertifier.sectigo.offset": "",
+  "libcertifier.sectigo.limit": 10,
+  "libcertifier.sectigo.start.date": "",
+  "libcertifier.sectigo.end.date": "",
+  "libcertifier.sectigo.validity.start.date": "",
+  "libcertifier.sectigo.validity.end.date": "",
+  "libcertifier.sectigo.cert.order": "",
+  "libcertifier.sectigo.is.cn.in.san": "",
+  "libcertifier.sectigo.request.type": "",
+  "libcertifier.sectigo.timestamp": ""
 }

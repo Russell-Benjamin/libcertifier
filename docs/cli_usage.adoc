@@ -593,7 +593,7 @@ Disabled by default - Only error messages are shown.
 | K
 | --auth-token <value> +
 -K <value>
-| Sectigo API auth token
+| Auth token to authenticate with API 
 
 | url
 | u
@@ -609,7 +609,7 @@ Disabled by default - Only error messages are shown.
 
 |===
 
-== *certifierUtil sectigo-get-cert options*
+== *certifierUtil sectigo-search-cert options*
 |===
 | *Long Option* | *Short Option* | *Examples* | *Description*
 | help
@@ -617,6 +617,171 @@ Disabled by default - Only error messages are shown.
 | --help +
 -h
 | Display this summary
+
+| auth-token
+| K
+| --auth-token <value> +
+-K <value>
+| Auth token to authenticate with API
+
+| group-name
+| G
+| --group-name <value> +
+-G <value>
+| Group name to filter the search results
+
+| group-email
+| E
+| --group-email <value> +
+-E <value>
+| Group email to filter the search results
+
+| status
+| S
+| --status <value> +
+-S <value>
+| Status to filter the search results
+
+| common-name
+| C
+| --common-name <value> +
+-C <value>
+| Common name of certificate to filter the search results
+
+| offset
+| o
+| --offset <value> +
+-o <value>
+| Offset value for paginated results 
+
+| limit
+| L
+| --limit <value> +
+-L <value>
+| Limit value for paginated results
+
+| start-date
+| f
+| --start-date <value> +
+-f <value>
+| Start date to filter the search results (Format: YYYY-MM-DD)
+
+| end-date
+| t
+| --end-date <value> +
+-t <value>
+| End date to filter the search results (Format: YYYY-MM-DD)
+
+| certificate-id
+| i
+| --certificate-id <value> +
+-i <value>
+| Certificate ID to filter the search results
+
+| validity-start-date
+| p
+| --validity-start-date <value> +
+-p <value>
+| Validity start date to filter the search results (Format: YYYY-MM-DD)
+
+| validity-end-date
+| q
+| --validity-end-date <value> +
+-q <value>
+| Validity end date to filter the search results (Format: YYYY-MM-DD)
+
+| cert-order
+| c
+| --cert-order <value> +
+-c <value>
+| To fetch the certificate order leaf and the ICA and Root order, pass leaf 
+
+| is-cn-in-san
+| a
+| --is-cn-in-san +
+-a
+| To check if the common name is also present in the subject alternative names, pass this flag
+
+| request-type
+| y
+| --request-type <value> +
+-y <value>
+| To fetch certificates based on requests. Ex. ACME, API, WEB, XCM
+
+| timestamp
+| m
+| --timestamp <value> +
+-m <value>
+| To fetch certificates based on timestamp types. Ex. createdTimestamp, approvedTimestamp, signedTimestamp, rejectedTimestamp, revokedTimestamp
+
+| devhub-id
+| D
+| --devhub-id <value> +
+-D <value>
+| To fetch certificates based on DevHub ID
+
+| key-type
+| W
+| --key-type <value> +
+-W <value>
+| To fetch certificate(s) that match this public key type/algorithm. Supported key types: [RSA-2048, RSA-3072, RSA-4096, RSA-8192, ECC-PRIME256V1, ECC-SECP384R1]
+
+|===
+
+== *certifierUtil sectigo-renew-cert options*
+|===
+| *Long Option* | *Short Option* | *Examples* | *Description*
+| help
+| h
+| --help +
+-h
+| Display this summary
+
+| auth-token
+| K
+| --auth-token <value> +
+-K <value>
+| Auth token to authenticate with API
+
+| common-name
+| C
+| --common-name <value> +
+-C <value>
+| Certificate common name (required for renewal)
+
+| serial-number
+| N
+| --serial-number <value> +
+-N <value>
+| Certificate serial number (either this or certificate ID is required for renewal)
+
+| certificate-id
+| i
+| --certificate-id <value> +
+-i <value>
+| Certificate ID (either this or serial number is required for renewal)
+
+| requestor-email
+| s
+| --requestor-email <value> +
+-s <value>
+| Requestor email (required for renewal)
+|===
+
+== *certifierUtil sectigo-revoke-cert options*
+|===
+| *Long Option* | *Short Option* | *Examples* | *Description*
+| help
+| h
+| --help +
+-h
+| Display this summary
+
+| auth-token
+| K
+| --auth-token <value> +
+-K <value>
+| Auth token to authenticate with API
 
 | common-name
 | C
@@ -628,13 +793,13 @@ Disabled by default - Only error messages are shown.
 | N
 | --serial-number <value> +
 -N <value>
-| Certificate serial number (required for revocation)
+| Certificate serial number (either this or certificate ID is required for revocation)
 
 | certificate-id
-| e
+| i
 | --certificate-id <value> +
--e <value>
-| Certificate ID (required for revocation)
+-i <value>
+| Certificate ID (either this or serial number is required for revocation)
 
 | requestor-email
 | s

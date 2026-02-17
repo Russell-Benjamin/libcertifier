@@ -241,6 +241,17 @@ struct _PropMap
     char * certificate_id;
     char * revocation_request_reason;
     char * requestor_email;
+    char * status;
+    char * offset;
+    int limit;
+    char * start_date;
+    char * end_date;
+    char * validity_start_date;
+    char * validity_end_date;
+    char * certificate_order;
+    char * is_cn_in_san;
+    char * request_type;
+    char * timestamp;
 };
 
 static void free_prop_map_values(CertifierPropMap * prop_map);
@@ -445,6 +456,39 @@ int sectigo_property_set(CertifierPropMap * prop_map, int name, const void * val
             break;
         case CERTIFIER_OPT_SECTIGO_REVOCATION_REQUEST_REASON:
             prop_map->revocation_request_reason = XSTRDUP((const char *)value); 
+            break;
+        case CERTIFIER_OPT_SECTIGO_STATUS:
+            prop_map->status = XSTRDUP((const char *)value);
+            break;
+        case CERTIFIER_OPT_SECTIGO_OFFSET:
+            prop_map->offset = XSTRDUP((const char *)value);
+            break;
+        case CERTIFIER_OPT_SECTIGO_LIMIT:
+            prop_map->limit = (int)(size_t)value;
+            break;
+        case CERTIFIER_OPT_SECTIGO_START_DATE:
+            prop_map->start_date = XSTRDUP((const char *)value);
+            break;
+        case CERTIFIER_OPT_SECTIGO_END_DATE:
+            prop_map->end_date = XSTRDUP((const char *)value);
+            break;
+        case CERTIFIER_OPT_SECTIGO_VALIDITY_START_DATE:
+            prop_map->validity_start_date = XSTRDUP((const char *)value);
+            break;
+        case CERTIFIER_OPT_SECTIGO_VALIDITY_END_DATE:
+            prop_map->validity_end_date = XSTRDUP((const char *)value);
+            break;
+        case CERTIFIER_OPT_SECTIGO_CERTIFICATE_ORDER:
+            prop_map->certificate_order = XSTRDUP((const char *)value);
+            break;
+        case CERTIFIER_OPT_SECTIGO_IS_CN_IN_SAN:
+            prop_map->is_cn_in_san = XSTRDUP((const char *)value);
+            break;
+        case CERTIFIER_OPT_SECTIGO_REQUEST_TYPE:
+            prop_map->request_type = XSTRDUP((const char *)value);
+            break;
+        case CERTIFIER_OPT_SECTIGO_TIMESTAMP:
+            prop_map->timestamp = XSTRDUP((const char *)value);
             break;
         default:
             log_warn("sectigo_property_set: unrecognized property [%d]", name);
@@ -970,6 +1014,39 @@ void * property_get(CertifierPropMap * prop_map, CERTIFIER_OPT name)
     case CERTIFIER_OPT_SECTIGO_REVOCATION_REQUEST_REASON:
         retval = (void *) prop_map->revocation_request_reason;  
         break;
+    case CERTIFIER_OPT_SECTIGO_STATUS:
+        retval = (void *) prop_map->status;
+        break;
+    case CERTIFIER_OPT_SECTIGO_OFFSET:
+        retval = (void *) prop_map->offset;
+        break;
+    case CERTIFIER_OPT_SECTIGO_LIMIT:
+        retval = (void *) (size_t) prop_map->limit;
+        break;
+    case CERTIFIER_OPT_SECTIGO_START_DATE:
+        retval = (void *) prop_map->start_date;
+        break;
+    case CERTIFIER_OPT_SECTIGO_END_DATE:    
+        retval = (void *) prop_map->end_date;
+        break;
+    case CERTIFIER_OPT_SECTIGO_VALIDITY_START_DATE:
+        retval = (void *) prop_map->validity_start_date;
+        break;
+    case CERTIFIER_OPT_SECTIGO_VALIDITY_END_DATE:
+        retval = (void *) prop_map->validity_end_date;
+        break;
+    case CERTIFIER_OPT_SECTIGO_CERTIFICATE_ORDER:
+        retval = (void *) prop_map->certificate_order;
+        break;
+    case CERTIFIER_OPT_SECTIGO_IS_CN_IN_SAN:
+        retval = (void *) prop_map->is_cn_in_san;
+        break;
+    case CERTIFIER_OPT_SECTIGO_REQUEST_TYPE:
+        retval = (void *) prop_map->request_type;
+        break;
+    case CERTIFIER_OPT_SECTIGO_TIMESTAMP:
+        retval = (void *) prop_map->timestamp;
+        break;
     default:
         log_warn("property_get: unrecognized property [%d]", name);
         retval = NULL;
@@ -1444,6 +1521,12 @@ static int load_sectigo_fields_from_json(CertifierPropMap *propMap, JSON_Object 
             sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_VALIDITY_DAYS, (void *) (size_t) validity_days);
         }
 
+        if (strcmp(key, "libcertifier.sectigo.limit") == 0) {
+            int limit = json_object_get_number(root, key);
+            log_info("Loaded sectigo limit: %d from config file.", limit);
+            sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_LIMIT, (void *) (size_t) limit);
+        }
+
         const char *value_str = json_object_get_string(root, key);
         if (value_str && strlen(value_str) > 0) {  // Only process non-empty values
             // Map config key to property enum
@@ -1519,7 +1602,48 @@ static int load_sectigo_fields_from_json(CertifierPropMap *propMap, JSON_Object 
                 log_info("Loaded sectigo revocation request reason: %s from config file.", value_str);
                 sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_REVOCATION_REQUEST_REASON, value_str);
             }
-            // Add more mappings as needed
+            else if (strcmp(key, "libcertifier.sectigo.status") == 0) {
+                log_info("Loaded sectigo status: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_STATUS, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.offset") == 0) {
+                int offset = json_object_get_number(root, key);
+                log_info("Loaded sectigo offset: %d from config file.", offset);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_OFFSET, (void *) (size_t) offset);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.start.date") == 0) {
+                log_info("Loaded sectigo start date: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_START_DATE, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.end.date") == 0) {
+                log_info("Loaded sectigo end date: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_END_DATE, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.validity.start.date") == 0) {
+                log_info("Loaded sectigo validity start date: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_VALIDITY_START_DATE, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.validity.end.date") == 0) {
+                log_info("Loaded sectigo validity end date: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_VALIDITY_END_DATE, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.certificate.order") == 0) {
+                log_info("Loaded sectigo certificate order: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_CERTIFICATE_ORDER, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.is.cn.in.san") == 0) {
+                int is_cn_in_san = json_object_get_number(root, key);
+                log_info("Loaded sectigo is CN in SAN: %d from config file.", is_cn_in_san);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_IS_CN_IN_SAN, (void *) (size_t) is_cn_in_san);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.request.type") == 0) {
+                log_info("Loaded sectigo request type: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_REQUEST_TYPE, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.timestamp") == 0) {
+                log_info("Loaded sectigo timestamp: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_TIMESTAMP, value_str);
+            }
         }
     }
 

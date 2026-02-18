@@ -1378,7 +1378,7 @@ static int process_command_line(CERTIFIER * easy)
                 return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_SERIAL_NUMBER, optarg);
             }
             break;
-        case 'i': // Certificate ID
+        case 'e': // Certificate ID
             if (optarg) {
                 return_code = certifier_set_property(easy->certifier, CERTIFIER_OPT_SECTIGO_CERTIFICATE_ID, optarg);
             }

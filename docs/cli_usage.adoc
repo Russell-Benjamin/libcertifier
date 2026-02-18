@@ -149,8 +149,6 @@ The certificate can be downloaded through the certificate ID returned as a resul
 |sectigo-get-cert
 |Requests Certificate from Sectigo
 
-|sectigo-help
-|Provides information on implemented Sectigo commands
 |===
 
 == *certifierUtil get-cert options*
@@ -684,9 +682,9 @@ Disabled by default - Only error messages are shown.
 | End date to filter the search results (Format: YYYY-MM-DD)
 
 | certificate-id
-| i
+| e 
 | --certificate-id <value> +
--i <value>
+-e <value>
 | Certificate ID to filter the search results
 
 | validity-start-date
@@ -772,9 +770,9 @@ Disabled by default - Only error messages are shown.
 | Certificate serial number (either this or certificate ID is required for renewal)
 
 | certificate-id
-| i
+| e 
 | --certificate-id <value> +
--i <value>
+-e <value>
 | Certificate ID (either this or serial number is required for renewal)
 
 | requestor-email
@@ -818,9 +816,9 @@ Disabled by default - Only error messages are shown.
 | Certificate serial number (either this or certificate ID is required for revocation)
 
 | certificate-id
-| i
+| e
 | --certificate-id <value> +
--i <value>
+-e <value>
 | Certificate ID (either this or serial number is required for revocation)
 
 | requestor-email

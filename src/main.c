@@ -44,6 +44,7 @@ typedef enum
     SECTIGO_MODE_SEARCH_CERT,
     SECTIGO_MODE_RENEW_CERT,
     SECTIGO_MODE_REVOKE_CERT,
+    SECTIGO_MODE_OCSP_STATUS,
     SECTIGO_MODE_PRINT_HELP
     
 } SECTIGO_MODE;
@@ -61,6 +62,7 @@ typedef union
   sectigo_search_cert_param_t search_cert_param;
   sectigo_renew_cert_param_t renew_cert_param;
   sectigo_revoke_cert_param_t revoke_cert_param;  
+  sectigo_ocsp_status_param_t ocsp_status_param;
 } sectigo_parameter_t;
 
 
@@ -123,7 +125,8 @@ SECTIGO_MODE sectigo_get_mode(int argc, char ** argv){
         {"sectigo-get-cert", SECTIGO_MODE_GET_CERT},
         {"sectigo-search-cert", SECTIGO_MODE_SEARCH_CERT},
         {"sectigo-renew-cert", SECTIGO_MODE_RENEW_CERT},
-        {"sectigo-revoke-cert", SECTIGO_MODE_REVOKE_CERT}
+        {"sectigo-revoke-cert", SECTIGO_MODE_REVOKE_CERT},
+        {"sectigo-ocsp-status", SECTIGO_MODE_OCSP_STATUS}
     };
     
     for(int i = 0; i < sizeof(command_map) / sizeof(command_map_t); ++i){
@@ -169,6 +172,7 @@ XPKI_CLIENT_ERROR_CODE xpki_print_helper(XPKI_MODE mode)
                  "sectigo-search-cert\n"
                  "sectigo-renew-cert\n"
                  "sectigo-revoke-cert\n"
+                 "sectigo-ocsp-status\n"
                  "sectigo-help\n");
     }
 
@@ -334,6 +338,10 @@ static const char * get_sectigo_command_opt_helper(SECTIGO_MODE mode)
     "--revocation-request-reason [value] (-R)\n"    \
     "--config [value] (-l)\n"                       \
 
+#define SECTIGO_OCSP_STATUS_HELPER                  \
+    "--cert-path [value] (-j)\n"                    \
+    "--config [value] (-l)\n"                       \
+
     switch (mode)
     {
     case SECTIGO_MODE_GET_CERT:
@@ -344,6 +352,8 @@ static const char * get_sectigo_command_opt_helper(SECTIGO_MODE mode)
         return SECTIGO_BASE_HELPER SECTIGO_RENEW_CERT_HELPER;
     case SECTIGO_MODE_REVOKE_CERT:
         return SECTIGO_BASE_HELPER SECTIGO_REVOKE_CERT_HELPER;
+    case SECTIGO_MODE_OCSP_STATUS:
+        return SECTIGO_BASE_HELPER SECTIGO_OCSP_STATUS_HELPER;
     case SECTIGO_MODE_PRINT_HELP:
         return SECTIGO_BASE_HELPER;
     default:
@@ -636,6 +646,7 @@ static const char * const sectigo_get_cert_short_options = "C:I:r:b:A:K:u:G:E:O:
 static const char * const sectigo_search_cert_short_options = "K:C:G:E:S:o:L:f:t:i:p:q:c:a:y:m:D:W:l:h";
 static const char * const sectigo_renew_cert_short_options = "K:C:N:i:s:l:h";
 static const char * const sectigo_revoke_cert_short_options = "K:C:N:i:s:R:l:h";
+static const char * const sectigo_ocsp_status_short_options = "j:l:h";
 
 static const struct option sectigo_get_cert_long_opts[] = {
     { "common-name", required_argument, NULL, 'C' },
@@ -705,11 +716,19 @@ static const struct option sectigo_revoke_cert_long_opts[] = {
     { NULL, 0, NULL, 0 }
 };
 
+static const struct option sectigo_ocsp_status_long_opts[] = {
+    { "cert-path", required_argument, NULL, 'j' },
+    { "config", required_argument, NULL, 'l' },
+    { "help", no_argument, NULL, 'h' },
+    { NULL, 0, NULL, 0 }
+};
+
 static sectigo_command_opt_lut_t sectigo_command_opt_lut[] = {
     { SECTIGO_MODE_GET_CERT, sectigo_get_cert_short_options, sectigo_get_cert_long_opts },
     { SECTIGO_MODE_SEARCH_CERT, sectigo_search_cert_short_options, sectigo_search_cert_long_opts },
     { SECTIGO_MODE_RENEW_CERT, sectigo_renew_cert_short_options, sectigo_renew_cert_long_opts },
     { SECTIGO_MODE_REVOKE_CERT, sectigo_revoke_cert_short_options, sectigo_revoke_cert_long_opts },
+    { SECTIGO_MODE_OCSP_STATUS, sectigo_ocsp_status_short_options, sectigo_ocsp_status_long_opts },
 };
 
 static size_t get_sectigo_command_opt_index(sectigo_command_opt_lut_t * lut, size_t n_entries, SECTIGO_MODE mode)
@@ -737,10 +756,11 @@ SECTIGO_CLIENT_ERROR_CODE sectigo_process(SECTIGO_MODE mode, sectigo_parameter_t
         ReturnErrorOnFailure(xc_sectigo_get_default_cert_param(&sectigo_parameter->get_cert_param));
         break;
     case SECTIGO_MODE_SEARCH_CERT:
-        // No default parameters to set for search cert, so just break
+    case SECTIGO_MODE_OCSP_STATUS:
+        // No default parameters to set for search cert or OCSP status, so just break
         break;
     case SECTIGO_MODE_RENEW_CERT:
-        ReturnErrorOnFailure(xc_sectigo_get_default_renew_cert_param(&sectigo_parameter->get_cert_param));
+        ReturnErrorOnFailure(xc_sectigo_get_default_renew_cert_param(&sectigo_parameter->renew_cert_param));
         break;
     case SECTIGO_MODE_REVOKE_CERT:
         ReturnErrorOnFailure(xc_sectigo_get_default_revoke_cert_param(&sectigo_parameter->revoke_cert_param));
@@ -864,7 +884,7 @@ SECTIGO_CLIENT_ERROR_CODE sectigo_process(SECTIGO_MODE mode, sectigo_parameter_t
         case 't':
             certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_END_DATE, optarg);
             break;
-        case 'i':
+        case 'e':
             certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_CERTIFICATE_ID, optarg);
             break;
         case 'p':
@@ -884,6 +904,9 @@ SECTIGO_CLIENT_ERROR_CODE sectigo_process(SECTIGO_MODE mode, sectigo_parameter_t
             break;
         case 'm':
             certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_TIMESTAMP, optarg);
+            break;
+        case 'j':
+            certifier_set_property(get_sectigo_certifier_instance(), CERTIFIER_OPT_SECTIGO_CERT_PATH, optarg);
             break;
         case '?':
                 log_info("Invalid or missing Sectigo option\n");
@@ -925,6 +948,9 @@ SECTIGO_CLIENT_ERROR_CODE sectigo_perform(int argc, char ** argv)
         break;
     case SECTIGO_MODE_REVOKE_CERT:
         return xc_sectigo_revoke_cert(&sectigo_parameter.revoke_cert_param);
+        break;
+    case SECTIGO_MODE_OCSP_STATUS:
+        return xc_sectigo_ocsp_status(&sectigo_parameter.ocsp_status_param);
         break;
     default:
         break;

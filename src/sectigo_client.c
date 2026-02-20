@@ -30,9 +30,21 @@
 #include "certifier/error.h"
 #include "certifier/property_internal.h"
 
+
+#include <openssl/x509.h>
+#include <openssl/x509v3.h>
+#include <openssl/ocsp.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+
+#include <curl/curl.h>
+
 #include <errno.h>
 #include <stdbool.h>
 #include <pthread.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 Certifier * get_sectigo_certifier_instance()
 {
@@ -444,8 +456,6 @@ CertifierError sectigo_client_search_certificates(CertifierPropMap * props)
         goto cleanup;
     }
 
-    sectigo_search_cert_param_t params;
-
     int first_param = 1; // Used to determine whether to prepend '?' or '&' for query parameters
     append_query_param(sectigo_search_cert_url, sizeof(sectigo_search_cert_url), "groupName", property_get(props, CERTIFIER_OPT_SECTIGO_GROUP_NAME), &first_param);
     append_query_param(sectigo_search_cert_url, sizeof(sectigo_search_cert_url), "groupEmailAddress", property_get(props, CERTIFIER_OPT_SECTIGO_GROUP_EMAIL), &first_param);
@@ -787,6 +797,249 @@ cleanup:
     return rc;
 }   
 
+CertifierError sectigo_client_ocsp_status(CertifierPropMap * props)
+{
+    CertifierError rc = CERTIFIER_ERROR_INITIALIZER;
+    const char *pem_path = property_get(props, CERTIFIER_OPT_SECTIGO_CERT_PATH);
+    if (!pem_path) {
+        rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+        rc.application_error_msg = util_format_error_here("Missing cert_path property");
+        return rc;
+    }
+
+    // Read PEM file into memory
+    FILE *fp = fopen(pem_path, "rb");
+    if (!fp) {
+        rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+        char err_msg[512];
+        snprintf(err_msg, sizeof(err_msg), "Unable to open PEM file: %s (errno=%d: %s)", 
+                 pem_path, errno, strerror(errno));
+        rc.application_error_msg = util_format_error_here(err_msg);
+        log_error("%s", err_msg);
+        return rc;
+    }
+    log_info("PEM file opened successfully, reading content...");
+    fseek(fp, 0, SEEK_END);
+    long fsize = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+    char *pem_buf = (char *)XMALLOC(fsize + 1);
+    if (!pem_buf) {
+        fclose(fp);
+        rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+        rc.application_error_msg = util_format_error_here("Memory allocation failed");
+        return rc;
+    }
+    fread(pem_buf, 1, fsize, fp);
+    pem_buf[fsize] = '\0';
+    fclose(fp);
+
+    // Load certs from PEM
+    log_info("Parsing PEM buffer...");
+    X509_LIST *certs = NULL;
+    rc = security_load_certs_from_pem(pem_buf, &certs, true);
+    XFREE(pem_buf);
+    if (rc.application_error_code != 0 || !certs) {
+        if (!rc.application_error_msg)
+            rc.application_error_msg = util_format_error_here("Failed to parse PEM certs");
+        log_error("Failed to load certs from PEM: error_code=%d", rc.application_error_code);
+        return rc;
+    }
+
+    // Extract leaf and intermediate certs
+    log_info("Extracting leaf and intermediate certificates...");
+    int cert_count = sk_X509_num(certs);
+    X509 *leaf = sk_X509_value(certs, cert_count - 1);
+    X509 *issuer = cert_count > 1 ? sk_X509_value(certs, cert_count - 2) : NULL;
+    if (!leaf || !issuer) {
+        rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+        rc.application_error_msg = util_format_error_here("PEM must contain at least leaf and intermediate cert");
+        security_free_cert_list(certs);
+        return rc;
+    }
+
+    // Extract AIA OCSP URL from leaf cert
+    log_info("Extracting OCSP URL from AIA extension...");
+    STACK_OF(OPENSSL_STRING) *ocsp_urls = X509_get1_ocsp(leaf);
+    if (!ocsp_urls || sk_OPENSSL_STRING_num(ocsp_urls) == 0) {
+        rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+        rc.application_error_msg = util_format_error_here("No OCSP URL found in AIA extension");
+        if (ocsp_urls) X509_email_free(ocsp_urls); // X509_email_free works for OCSP URLs too
+        security_free_cert_list(certs);
+        return rc;
+    }
+    const char *ocsp_url = sk_OPENSSL_STRING_value(ocsp_urls, 0);
+    log_info("OCSP URL extracted from AIA: %s", ocsp_url);
+
+    // Build OCSP request
+    OCSP_CERTID *id = OCSP_cert_to_id(NULL, leaf, issuer);
+    if (!id) {
+        rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+        rc.application_error_msg = util_format_error_here("Failed to create OCSP_CERTID");
+        X509_email_free(ocsp_urls);
+        security_free_cert_list(certs);
+        return rc;
+    }
+    OCSP_REQUEST *req = OCSP_REQUEST_new();
+    if (!req || !OCSP_request_add0_id(req, id)) {
+        rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+        rc.application_error_msg = util_format_error_here("Failed to create OCSP_REQUEST");
+        if (req) OCSP_REQUEST_free(req);
+        OCSP_CERTID_free(id);
+        X509_email_free(ocsp_urls);
+        security_free_cert_list(certs);
+        return rc;
+    }
+
+    // Serialize OCSP request
+    unsigned char *req_der = NULL;
+    int req_der_len = i2d_OCSP_REQUEST(req, &req_der);
+    if (req_der_len <= 0) {
+        rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+        rc.application_error_msg = util_format_error_here("Failed to encode OCSP request");
+        OCSP_REQUEST_free(req);
+        X509_email_free(ocsp_urls);
+        security_free_cert_list(certs);
+        return rc;
+    }
+
+    // Base64 encode the OCSP request
+    int base64_len = base64_encode_len(req_der_len);
+    char *base64_req = (char *)XMALLOC(base64_len + 1);
+    if (!base64_req) {
+        rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+        rc.application_error_msg = util_format_error_here("Memory allocation failed for base64 encoding");
+        OPENSSL_free(req_der);
+        OCSP_REQUEST_free(req);
+        X509_email_free(ocsp_urls);
+        security_free_cert_list(certs);
+        return rc;
+    }
+    base64_encode(base64_req, req_der, req_der_len);
+    base64_req[base64_len] = '\0';
+    
+    // URL-encode the base64 string using curl_easy_escape
+    CURL *curl = curl_easy_init();
+    if (!curl) {
+        rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+        rc.application_error_msg = util_format_error_here("Failed to initialize CURL for URL encoding");
+        XFREE(base64_req);
+        OPENSSL_free(req_der);
+        OCSP_REQUEST_free(req);
+        X509_email_free(ocsp_urls);
+        security_free_cert_list(certs);
+        return rc;
+    }
+    
+    char *url_encoded = curl_easy_escape(curl, base64_req, 0);
+    curl_easy_cleanup(curl);
+    
+    if (!url_encoded) {
+        rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+        rc.application_error_msg = util_format_error_here("URL encoding failed");
+        XFREE(base64_req);
+        OPENSSL_free(req_der);
+        OCSP_REQUEST_free(req);
+        X509_email_free(ocsp_urls);
+        security_free_cert_list(certs);
+        return rc;
+    }
+    
+    // Build OCSP GET URL
+    char ocsp_get_url[4096];
+    snprintf(ocsp_get_url, sizeof(ocsp_get_url), "%s/%s", ocsp_url, url_encoded);
+
+    // Send OCSP GET request 
+    http_response *resp = NULL;
+    resp = http_get(props, ocsp_get_url, NULL);
+    curl_free(url_encoded);  // Free the curl-allocated string
+    XFREE(base64_req);
+    
+    if (!resp || !resp->payload) {
+        rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+        rc.application_error_msg = util_format_error_here("Failed to get OCSP response");
+        if (req_der) OPENSSL_free(req_der);
+        OCSP_REQUEST_free(req);
+        X509_email_free(ocsp_urls);
+        security_free_cert_list(certs);
+        return rc;
+    }
+
+    // Parse OCSP response (response is binary DER)
+    const unsigned char *p = (const unsigned char *)resp->payload;
+    long resp_len = (long)resp->payload_len;
+    
+    if (resp->http_code != 200) {
+        rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+        char err_msg[512];
+        snprintf(err_msg, sizeof(err_msg), "Invalid OCSP response: HTTP %d", resp->http_code);
+        rc.application_error_msg = util_format_error_here(err_msg);
+        if (req_der) OPENSSL_free(req_der);
+        OCSP_REQUEST_free(req);
+        X509_email_free(ocsp_urls);
+        security_free_cert_list(certs);
+        http_free_response(resp);
+        return rc;
+    }
+    
+    OCSP_RESPONSE *ocsp_resp = d2i_OCSP_RESPONSE(NULL, &p, resp_len);
+    if (!ocsp_resp) {
+        rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+        rc.application_error_msg = util_format_error_here("Failed to parse OCSP response");
+        if (req_der) OPENSSL_free(req_der);
+        OCSP_REQUEST_free(req);
+        X509_email_free(ocsp_urls);
+        security_free_cert_list(certs);
+        http_free_response(resp);
+        return rc;
+    }
+
+    int status = OCSP_response_status(ocsp_resp);
+    if (status != OCSP_RESPONSE_STATUS_SUCCESSFUL) {
+        rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+        rc.application_error_msg = util_format_error_here("OCSP response not successful");
+    } else {
+        OCSP_BASICRESP *basic = OCSP_response_get1_basic(ocsp_resp);
+        if (!basic) {
+            rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+            rc.application_error_msg = util_format_error_here("Failed to parse OCSP_BASICRESP");
+        } else {
+            int cert_status, crl_reason;
+            ASN1_GENERALIZEDTIME *revtime, *thisupd, *nextupd;
+            cert_status = OCSP_single_get0_status(
+                OCSP_resp_get0(basic, 0), &crl_reason, &revtime, &thisupd, &nextupd);
+            
+            const char *status_str = OCSP_cert_status_str(cert_status);
+            char msg[512];
+            
+            if (cert_status == V_OCSP_CERTSTATUS_GOOD) {
+                rc.application_error_code = 0;
+                snprintf(msg, sizeof(msg), "Certificate status: %s", status_str);
+                rc.application_error_msg = util_format_error_here(msg);
+                log_info("%s", msg);
+            } else if (cert_status == V_OCSP_CERTSTATUS_REVOKED) {
+                rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+                snprintf(msg, sizeof(msg), "Certificate status: %s (reason=%d)", status_str, crl_reason);
+                rc.application_error_msg = util_format_error_here(msg);
+                log_error("%s", msg);
+            } else {
+                rc.application_error_code = CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+                snprintf(msg, sizeof(msg), "Certificate status: %s", status_str);
+                rc.application_error_msg = util_format_error_here(msg);
+                log_warn("%s", msg);
+            }
+            OCSP_BASICRESP_free(basic);
+        }
+    }
+
+    OCSP_RESPONSE_free(ocsp_resp);
+    if (req_der) OPENSSL_free(req_der);
+    OCSP_REQUEST_free(req);
+    X509_email_free(ocsp_urls);
+    security_free_cert_list(certs);
+    http_free_response(resp);
+    return rc;
+}
+
 SECTIGO_CLIENT_ERROR_CODE xc_sectigo_get_cert(sectigo_get_cert_param_t * params)
 {
     Certifier *certifier = get_sectigo_certifier_instance();
@@ -894,6 +1147,17 @@ SECTIGO_CLIENT_ERROR_CODE xc_sectigo_revoke_cert(sectigo_revoke_cert_param_t * p
     // Call the request function
     CertifierPropMap *props = certifier_get_prop_map(certifier);
     CertifierError req_rc = sectigo_client_revoke_certificate(props);
+
+    return req_rc.application_error_code;
+}
+
+SECTIGO_CLIENT_ERROR_CODE xc_sectigo_ocsp_status(sectigo_ocsp_status_param_t * params)
+{
+    Certifier *certifier = get_sectigo_certifier_instance();
+
+    // Call the request function
+    CertifierPropMap *props = certifier_get_prop_map(certifier);
+    CertifierError req_rc = sectigo_client_ocsp_status(props);
 
     return req_rc.application_error_code;
 }

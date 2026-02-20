@@ -41,6 +41,7 @@ typedef struct http_response
 {
     const char * error_msg;
     const char * payload;
+    size_t payload_len;
     int http_code;
     int error;
 } http_response;

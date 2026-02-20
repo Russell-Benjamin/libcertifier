@@ -92,6 +92,10 @@ typedef struct {
     const char * revocation_request_reason;
 } sectigo_revoke_cert_param_t;
 
+typedef struct {
+    const char * certificate_path;
+} sectigo_ocsp_status_param_t;
+
 typedef enum {
     SECTIGO_CLIENT_SUCCESS = 0,
     SECTIGO_CLIENT_INVALID_ARGUMENT,
@@ -114,6 +118,8 @@ CertifierError sectigo_client_renew_certificate(CertifierPropMap * props);
 
 CertifierError sectigo_client_revoke_certificate(CertifierPropMap * props);
 
+CertifierError sectigo_client_ocsp_status(CertifierPropMap * props);
+
 CertifierError sectigo_generate_certificate_signing_request(Certifier *certifier, char **out_csr_pem);
 
 Certifier * get_sectigo_certifier_instance();
@@ -125,6 +131,8 @@ SECTIGO_CLIENT_ERROR_CODE xc_sectigo_search_cert(sectigo_search_cert_param_t * p
 SECTIGO_CLIENT_ERROR_CODE xc_sectigo_renew_cert(sectigo_renew_cert_param_t * params);
 
 SECTIGO_CLIENT_ERROR_CODE xc_sectigo_revoke_cert(sectigo_revoke_cert_param_t * params);
+
+SECTIGO_CLIENT_ERROR_CODE xc_sectigo_ocsp_status(sectigo_ocsp_status_param_t * params);
 
 SECTIGO_CLIENT_ERROR_CODE xc_sectigo_get_default_cert_param(sectigo_get_cert_param_t * params);
 

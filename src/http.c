@@ -119,11 +119,12 @@ static http_response * http_error_response(const char * msg, int error_code, int
         resp->error     = error_code;
         resp->error_msg = XSTRDUP(msg);
         resp->http_code = http_code;
+        resp->payload_len = 0;
     }
     return resp;
 }
 
-static http_response * http_success_response(const char * payload, int http_code, const char * errbuf, int err_code)
+static http_response * http_success_response(const char * payload, size_t payload_len, int http_code, const char * errbuf, int err_code)
 {
     http_response * resp = XCALLOC(1, sizeof(http_response));
     if (resp != NULL)
@@ -132,6 +133,7 @@ static http_response * http_success_response(const char * payload, int http_code
         resp->error_msg = XSTRDUP(errbuf);
         resp->http_code = http_code;
         resp->payload   = payload; // struct takes ownership of payload
+        resp->payload_len = payload_len;
     }
     return resp;
 }
@@ -239,7 +241,7 @@ static http_response * do_http(const CertifierPropMap * props, const char * url,
         } else {
             log_debug("do_http returned: %s", cf->payload);
         }
-        return http_success_response(cf->payload, http_code, errbuf, res);
+        return http_success_response(cf->payload, cf->size, http_code, errbuf, res);
         // log_debug("do_http returned: %s", cf->payload);
         // return http_success_response(cf->payload, http_code, errbuf, res);
     }

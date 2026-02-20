@@ -393,7 +393,7 @@ static int save_x509certs_to_filesystem(Certifier * certifier, char * x509_certs
     util_trim(x509_certs);
 
     log_info("\nLoading Certs from PKCS7...\n");
-    certifier_err_info = security_load_certs_from_pem(x509_certs, &certs);
+    certifier_err_info = security_load_certs_from_pem(x509_certs, &certs, false);
     assign_last_error(certifier, &certifier_err_info);
     rc = certifier_err_info.application_error_code;
     if (certifier_err_info.application_error_code != 0)

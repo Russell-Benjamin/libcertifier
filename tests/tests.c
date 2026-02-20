@@ -1021,7 +1021,7 @@ void test_x509_cert(void)
     char * cert3_ou       = NULL;
 
     // try cert only format
-    CertifierError rc = security_load_certs_from_pem(ejbca_with_hsm_pem_cert_only_blob, &cert_list);
+    CertifierError rc = security_load_certs_from_pem(ejbca_with_hsm_pem_cert_only_blob, &cert_list, false);
     assert_int_equal(0, rc.application_error_code);
     assert_non_null(cert_list);
     cert1 = security_cert_list_get(cert_list, 0);
@@ -1033,7 +1033,7 @@ void test_x509_cert(void)
     cert_list = NULL;
 
     // try ejbca pkcs7 format
-    rc = security_load_certs_from_pem(ejbca_with_hsm_pem_pkcs7_blob, &cert_list);
+    rc = security_load_certs_from_pem(ejbca_with_hsm_pem_pkcs7_blob, &cert_list, false);
     assert_int_equal(0, rc.application_error_code);
     assert_non_null(cert_list);
     cert1 = security_cert_list_get(cert_list, 0);
@@ -1045,7 +1045,7 @@ void test_x509_cert(void)
     cert_list = NULL;
 
     // try digicert pkcs7 format (original tests)
-    rc = security_load_certs_from_pem(digicert_pem_pkcs7_blob, &cert_list);
+    rc = security_load_certs_from_pem(digicert_pem_pkcs7_blob, &cert_list, false);
     assert_int_equal(0, rc.application_error_code);
     assert_non_null(cert_list);
 

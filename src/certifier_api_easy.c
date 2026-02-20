@@ -147,6 +147,11 @@
     { "revocation-request-reason", required_argument, NULL, 'R' }, \
     { "config", required_argument, NULL, 'l' }, \
     { NULL, 0, NULL, 0 }
+
+#define SECTIGO_OCSP_STATUS_LONG_OPTIONS \
+    { "cert-path", required_argument, NULL, 'j' }, \
+    { "config", required_argument, NULL, 'l' }, \
+    { NULL, 0, NULL, 0 }
     
 static void finish_operation(CERTIFIER * easy, int return_code, const char * operation_output);
 
@@ -366,6 +371,7 @@ CERTIFIER_MODE certifier_api_easy_get_mode(CERTIFIER * easy)
         { "sectigo-search-cert", CERTIFIER_MODE_SECTIGO_SEARCH_CERT},
         { "sectigo-renew-cert", CERTIFIER_MODE_SECTIGO_RENEW_CERT},
         { "sectigo-revoke-cert", CERTIFIER_MODE_SECTIGO_REVOKE_CERT},
+        { "sectigo-ocsp-status", CERTIFIER_MODE_SECTIGO_OCSP_STATUS}
     };
 
     for (int i = 0; i < sizeof(command_map) / sizeof(command_map_t); ++i)
@@ -927,6 +933,29 @@ static int do_sectigo_revoke_cert(CERTIFIER * easy)
     }
 }
 
+static int do_sectigo_ocsp_status(CERTIFIER * easy)
+{
+    // Check for required Sectigo properties
+    const char *cert_path = certifier_get_property(easy->certifier, CERTIFIER_OPT_SECTIGO_CERT_PATH);
+    if (util_is_empty(cert_path)) {
+        finish_operation(easy, CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1, "Missing required Sectigo flag: cert-path");
+        return CERTIFIER_ERR_EMPTY_OR_INVALID_PARAM_1;
+    }
+
+    // Call Sectigo API to check OCSP status
+    CertifierPropMap * props = certifier_easy_api_get_props(easy->certifier);
+    CertifierError rc = sectigo_client_ocsp_status(props);
+
+    //Handle result
+    if (rc.application_error_code == 0) {
+        finish_operation(easy, 0, rc.application_error_msg);
+        return 0;
+    } else {
+        finish_operation(easy, rc.application_error_code, rc.application_error_msg);
+        return rc.application_error_code;
+    }
+}
+
 
 char * certifier_api_easy_get_version(CERTIFIER * easy)
 {
@@ -971,6 +1000,7 @@ int certifier_api_easy_print_helper(CERTIFIER * easy)
                  "sectigo-search-cert\n"
                  "sectigo-renew-cert\n"
                  "sectigo-revoke-cert\n"
+                 "sectigo-ocsp-status\n"
                 );
     }
 
@@ -1025,6 +1055,7 @@ static int process_command_line(CERTIFIER * easy)
     static const char * const sectigo_search_cert_short_options   = BASE_SHORT_OPTIONS CA_PATH_SHORT_OPTION;
     static const char * const sectigo_renew_cert_short_options    = BASE_SHORT_OPTIONS CA_PATH_SHORT_OPTION;
     static const char * const sectigo_revoke_cert_short_options   = BASE_SHORT_OPTIONS CA_PATH_SHORT_OPTION;
+    static const char * const sectigo_ocsp_status_short_options   = BASE_SHORT_OPTIONS CA_PATH_SHORT_OPTION;
 
     static const struct option get_cert_long_opts[]      = { BASE_LONG_OPTIONS,     GET_CRT_TOKEN_LONG_OPTIONS,
                                                              GET_CERT_LONG_OPTIONS, VALIDITY_DAYS_LONG_OPTION,
@@ -1038,6 +1069,7 @@ static int process_command_line(CERTIFIER * easy)
     static const struct option sectigo_search_cert_long_opts[] = {BASE_LONG_OPTIONS, SECTIGO_SEARCH_CERT_LONG_OPTIONS, {NULL, 0, NULL, 0}};
     static const struct option sectigo_renew_cert_long_opts[] = {BASE_LONG_OPTIONS, SECTIGO_RENEW_CERT_LONG_OPTIONS, {NULL, 0, NULL, 0}};
     static const struct option sectigo_revoke_cert_long_opts[] = {BASE_LONG_OPTIONS, SECTIGO_REVOKE_CERT_LONG_OPTIONS, {NULL, 0, NULL, 0}};
+    static const struct option sectigo_ocsp_status_long_opts[] = {BASE_LONG_OPTIONS, SECTIGO_OCSP_STATUS_LONG_OPTIONS, {NULL, 0, NULL, 0}};
 
     static command_opt_lut_t command_opt_lut[] = {
         { CERTIFIER_MODE_REGISTER, get_cert_short_options, get_cert_long_opts },
@@ -1049,7 +1081,8 @@ static int process_command_line(CERTIFIER * easy)
         { CERTIFIER_MODE_SECTIGO_GET_CERT, sectigo_get_cert_short_options, sectigo_get_cert_long_opts},
         { CERTIFIER_MODE_SECTIGO_SEARCH_CERT, sectigo_search_cert_short_options, sectigo_search_cert_long_opts},
         { CERTIFIER_MODE_SECTIGO_RENEW_CERT, sectigo_renew_cert_short_options, sectigo_renew_cert_long_opts},
-        { CERTIFIER_MODE_SECTIGO_REVOKE_CERT, sectigo_revoke_cert_short_options, sectigo_revoke_cert_long_opts}
+        { CERTIFIER_MODE_SECTIGO_REVOKE_CERT, sectigo_revoke_cert_short_options, sectigo_revoke_cert_long_opts},
+        { CERTIFIER_MODE_SECTIGO_OCSP_STATUS, sectigo_ocsp_status_short_options, sectigo_ocsp_status_long_opts}
     };
 
     char * version_string = certifier_api_easy_get_version(easy);
@@ -1678,6 +1711,10 @@ switch(easy -> mode){
 
     case CERTIFIER_MODE_SECTIGO_REVOKE_CERT:
         do_sectigo_revoke_cert(easy);
+        break;
+
+    case CERTIFIER_MODE_SECTIGO_OCSP_STATUS:
+        do_sectigo_ocsp_status(easy);
         break;
 
     default:

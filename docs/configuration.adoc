@@ -61,6 +61,7 @@ xref:libcertifier.adoc[*Back to Manual*]
 | libcertifier.sectigo.is.cn.in.san   | |
 | libcertifier.sectigo.request.type   | |
 | libcertifier.sectigo.timestamp   | |
+| libcertifier.cert.path  | |
 |=======
 
 == Extended Key Usage values:

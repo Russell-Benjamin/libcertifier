@@ -840,6 +840,28 @@ Disabled by default - Only error messages are shown.
 | Path to config file
 |===
 
+== *certifierUtil sectigo-ocsp-status options*
+|===
+| *Long Option* | *Short Option* | *Examples* | *Description*
+| help
+| h
+| --help +
+-h
+| Display this summary
+
+| cert-path
+| j
+| --cert-path <value> +
+-j <value>
+| Path to the certificate file (PEM format)
+
+| config
+| l
+| --config <file> +
+-l <file> +
+| Path to config file
+|===
+
 *Configuration File*
 
 Configuration File is a file used to specify internal certifier util parameters such as timeouts, ecc curve types and other miscellaneous items. This file follows the JSON Format and can be manually editted from the `libcertifier.cfg.sample` template file present in the root directory.

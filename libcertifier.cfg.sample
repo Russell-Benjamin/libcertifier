@@ -54,5 +54,6 @@
   "libcertifier.sectigo.cert.order": "",
   "libcertifier.sectigo.is.cn.in.san": "",
   "libcertifier.sectigo.request.type": "",
-  "libcertifier.sectigo.timestamp": ""
+  "libcertifier.sectigo.timestamp": "",
+  "libcertifier.sectigo.cert.path": ""
 }

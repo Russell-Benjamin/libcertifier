@@ -252,6 +252,7 @@ struct _PropMap
     char * is_cn_in_san;
     char * request_type;
     char * timestamp;
+    char * cert_path;
 };
 
 static void free_prop_map_values(CertifierPropMap * prop_map);
@@ -489,6 +490,9 @@ int sectigo_property_set(CertifierPropMap * prop_map, int name, const void * val
             break;
         case CERTIFIER_OPT_SECTIGO_TIMESTAMP:
             prop_map->timestamp = XSTRDUP((const char *)value);
+            break;
+        case CERTIFIER_OPT_SECTIGO_CERT_PATH:
+            prop_map->cert_path = XSTRDUP((const char *)value);
             break;
         default:
             log_warn("sectigo_property_set: unrecognized property [%d]", name);
@@ -1046,6 +1050,9 @@ void * property_get(CertifierPropMap * prop_map, CERTIFIER_OPT name)
         break;
     case CERTIFIER_OPT_SECTIGO_TIMESTAMP:
         retval = (void *) prop_map->timestamp;
+        break;
+    case CERTIFIER_OPT_SECTIGO_CERT_PATH:
+        retval = (void *) prop_map->cert_path;
         break;
     default:
         log_warn("property_get: unrecognized property [%d]", name);
@@ -1643,6 +1650,10 @@ static int load_sectigo_fields_from_json(CertifierPropMap *propMap, JSON_Object 
             else if (strcmp(key, "libcertifier.sectigo.timestamp") == 0) {
                 log_info("Loaded sectigo timestamp: %s from config file.", value_str);
                 sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_TIMESTAMP, value_str);
+            }
+            else if (strcmp(key, "libcertifier.sectigo.cert.path") == 0) {
+                log_info("Loaded sectigo cert path: %s from config file.", value_str);
+                sectigo_property_set(propMap, CERTIFIER_OPT_SECTIGO_CERT_PATH, value_str);  
             }
         }
     }

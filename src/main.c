@@ -121,7 +121,6 @@ SECTIGO_MODE sectigo_get_mode(int argc, char ** argv){
     } command_map_t;
 
     command_map_t command_map[] = {
-        {"sectigo-help", SECTIGO_MODE_PRINT_HELP},  
         {"sectigo-get-cert", SECTIGO_MODE_GET_CERT},
         {"sectigo-search-cert", SECTIGO_MODE_SEARCH_CERT},
         {"sectigo-renew-cert", SECTIGO_MODE_RENEW_CERT},
@@ -173,7 +172,7 @@ XPKI_CLIENT_ERROR_CODE xpki_print_helper(XPKI_MODE mode)
                  "sectigo-renew-cert\n"
                  "sectigo-revoke-cert\n"
                  "sectigo-ocsp-status\n"
-                 "sectigo-help\n");
+                );
     }
 
     return XPKI_CLIENT_SUCCESS;

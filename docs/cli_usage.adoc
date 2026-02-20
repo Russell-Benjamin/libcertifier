@@ -108,15 +108,6 @@ Same command with SAT authentication:
 ./certifierUtil print-cert -k <pkcs12-file-path> -p <password>
 ----
 
-*Fetch Sectigo Certificate*
-
-The certificate can be downloaded through the certificate ID returned as a result of running the command.
-
-----
-./certifierUtil sectigo-get-cert -C <common-name> -I <ID> -r <project-name> -b <business-justification> -A <subject-alt-names> -G <group-name> -E <group-email> -O <owner-first-name> -J <owner-last-name> 
--Z <owner-email> -K <auth-token> -u <url> -l <config>
-----
-
 == *certifierUtil commands*
 
 |===
@@ -146,8 +137,20 @@ The certificate can be downloaded through the certificate ID returned as a resul
 | revoke
 | Revoke Certificate
 
-|sectigo-get-cert
-|Requests Certificate from Sectigo
+| sectigo-get-cert
+| Fetch Certificate from Sectigo
+
+| sectigo-search-cert
+| Search for certificates issued by Sectigo using various filters
+
+| sectigo-renew-cert
+| Renew a Sectigo certificate if not expired, and meets renew requirements
+
+| sectigo-revoke-cert
+| Revoke a Sectigo certificate
+
+| sectigo-ocsp-status
+| Check OCSP status of a Sectigo certificate
 
 |===
 
